@@ -15,6 +15,21 @@ npm install
 npm run dev
 ```
 
+If the browser shows stale Vite errors such as `504 (Outdated Optimize Dep)`,
+start with a fresh optimized dependency cache:
+
+```bash
+npm run dev:fresh
+```
+
+If port `1420` is already occupied during a presentation, use the backup port:
+
+```bash
+npm run dev:alt
+```
+
+Then open `http://127.0.0.1:1421/`.
+
 For the desktop shell:
 
 ```bash

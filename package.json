@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 1420",
+    "dev:fresh": "npm run clean:vite && vite --host 127.0.0.1 --port 1420 --force",
+    "dev:alt": "npm run clean:vite && vite --host 127.0.0.1 --port 1421 --force",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "clean:vite": "node ./scripts/clean-vite-cache.mjs",
     "test": "node ./scripts/run-vitest.mjs run",
     "test:watch": "node ./scripts/run-vitest.mjs",
     "ci": "npm run check && npm run test && npm run build",
