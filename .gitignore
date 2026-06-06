@@ -6,3 +6,7 @@ dist-ssr
 src-tauri/target
 src-tauri/gen
 *.log
+
+# Agent configuration (local only)
+AGENTS.md
+.opencode/agents/*.md
