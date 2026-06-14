@@ -149,4 +149,23 @@ describe("detectorMachine", () => {
 
     controller.destroy();
   });
+
+  it("uses the active embedded video profile when scanning a different feed video", () => {
+    const { controller, snapshot } = createController();
+
+    controller.dispatch("APP_READY");
+    controller.updateVisibility("synthetic-city-walk", 0.8);
+    vi.advanceTimersByTime(4500);
+
+    expect(snapshot().state).toBe("RESULT_AI_GENERATED");
+    expect(snapshot().activeVideoId).toBe("synthetic-city-walk");
+    expect(snapshot().result).toMatchObject({
+      videoId: "synthetic-city-walk",
+      score: 86,
+      classification: "Likely AI-Generated",
+      anomalyCategory: "texture_jitter"
+    });
+
+    controller.destroy();
+  });
 });

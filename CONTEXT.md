@@ -3,59 +3,56 @@
 ## Identity
 
 AgilaEye is the repository and system name for a lightweight explainable
-AI-generated video detection research prototype.
+AI-generated video detection simulation prototype.
 
 HaribonEye is the current Tauri/Svelte prototype product name shown in the app.
-Use AgilaEye when writing repo, system, architecture, dataset, and research
+Use AgilaEye when writing repo, system, architecture, evaluation, and research
 docs. Use HaribonEye only when referring to the current app shell, UI branding,
 or existing Tauri product name.
 
 ## Product Aim
 
-AgilaEye investigates whether a lightweight, explainable detector can act as a
-near-real-time first-level screening aid for AI-generated videos in a simulated
-Facebook-style browsing environment.
+AgilaEye demonstrates how a lightweight, explainable detector could feel inside
+a simulated Facebook-style browsing environment. The MVP uses embedded videos
+and deterministic scan outputs so users can repeatedly scroll, scan, inspect
+results, and review SOP-style performance metrics.
 
 The system should help ordinary users understand that a visible video may have
 synthetic-media signals. It should not claim definitive forensic truth.
 
 ## Current State
 
-The app is currently a polished simulation:
+The app is a polished simulation:
 
 - Svelte/Tauri interface with a Facebook-style feed.
 - Detector overlay with idle, scanning, result, detail, and demo-control states.
 - State machine timing and interruption behavior.
-- Mock authentic and AI-generated result payloads.
+- Embedded video posts with deterministic authentic and AI-generated scan
+  outputs.
+- SOP metrics computed from the embedded evaluation set.
 
 There is no real model, dataset pipeline, frame extraction, Grad-CAM output,
-screen capture, browser automation, or Facebook integration yet.
+screen capture, browser automation, or Facebook integration in the MVP.
 
-## Target Research Flow
+## Target MVP Flow
 
-The planned v1 research flow is:
-
-1. Acquire a reproducible 100-video pilot subset from official GenVideo or
-   GenVideo-100K sources.
-2. Record every selected video in a manifest.
-3. Sample eight frames per video.
-4. Resize frames to 224x224.
-5. Extract features using pretrained MobileNetV3-Small in PyTorch.
-6. Aggregate frame features with temporal average pooling.
-7. Train a shallow binary classifier.
-8. Evaluate accuracy, precision, recall, F1-score, and inference time.
-9. Generate Grad-CAM explanations for representative frames.
-10. Map explanations to template text and anomaly categories.
-11. Expose future local inference through a Python sidecar JSON contract.
-12. Feed the result contract into the existing Svelte/Tauri detector UI.
+1. Render a simulated Facebook-style feed with embedded videos.
+2. Detect the active video using viewport visibility.
+3. Run the existing scan state machine.
+4. Resolve a deterministic scan result for the active embedded video.
+5. Show AI-likelihood, classification, explanation bullets, frame count, and
+   simulated inference time.
+6. Let users scan repeatedly by scrolling through videos and using Rescan.
+7. Display SOP performance metrics computed from the embedded evaluation set:
+   accuracy, precision, recall, F1-score, and average inference time.
 
 ## Users
 
 - Social media users who need understandable first-level screening while
   browsing videos.
-- Student researchers evaluating feasibility, performance, and explanation
-  quality.
-- Future developers extending the prototype into a real detector pipeline.
+- Student researchers evaluating interface feasibility, performance reporting,
+  and explanation clarity in a controlled simulation.
+- Future developers extending or replacing the simulated detector.
 
 ## Non-Goals
 
@@ -65,35 +62,35 @@ The planned v1 research flow is:
 - No private user-video collection.
 - No audio detection, metadata forensics, source tracing, or facial biometric
   verification.
-- No large multimodal reasoning model for v1.
-- No browser-side model runtime for v1.
+- No large multimodal reasoning model for MVP completion.
+- No browser-side model runtime for MVP completion.
+- No dataset download or model training for MVP completion.
+- No Python sidecar for MVP completion.
 
-## Research Defaults
+## MVP Defaults
 
-- Dataset target: 100 videos, 50 authentic and 50 AI-generated.
-- Split: 70 training, 10 validation, 20 testing, assigned at video level.
-- Random seed: 42.
-- Model stack: Python, PyTorch, torchvision.
-- Baseline model: frozen MobileNetV3-Small feature extractor plus shallow MLP.
-- Frame sampling: eight uniformly spaced frames per video.
-- Input size: 224x224.
-- Initial threshold: 0.50.
-- Explanation method: Grad-CAM for one to three representative frames.
+- Evaluation target: fixed embedded-video set.
+- Metric source: deterministic ground-truth and predicted labels in code.
+- Frame sampling shown in UI: eight simulated frames per scan.
+- AI-likelihood threshold concept: 0.50, represented through deterministic
+  result scores.
+- Explanation method: deterministic explanation bullets and details per video.
 - Explanation categories: object inconsistency, texture jitter, interaction
   anomaly, movement anomaly, and none for authentic videos.
+- Metrics shown from SOP: accuracy, precision, recall, F1-score, and average
+  inference time.
 
 ## Shared Terms
 
 - Active video: the feed video currently visible enough to be analyzed.
-- AI-likelihood score: probability-like model output shown as a percentage.
+- AI-likelihood score: probability-like simulated output shown as a percentage.
 - Anomaly category: dominant visible defect category used for explanation
-  mapping, not the binary training label.
-- Dataset manifest: CSV source of truth for selected videos, labels, splits,
-  quality status, and checksums.
-- Detector sidecar: future local Python command that performs inference and
-  emits JSON for the app.
-- Explanation mapping: deterministic template process that turns model evidence
-  and anomaly category into user-readable text.
+  mapping.
+- Embedded evaluation set: fixed in-code list of videos, ground-truth labels,
+  predicted labels, scores, simulated inference times, and explanation details.
+- Detector simulation: local deterministic module that returns the scan result
+  for the active embedded video.
+- Explanation mapping: deterministic process that turns the video profile into
+  user-readable text.
 - First-level screening: supportive warning layer, not a final judgment.
-- Representative frame: sampled frame selected for explanation or heatmap
-  display.
+- Representative frame count: the eight simulated frames reported for each scan.

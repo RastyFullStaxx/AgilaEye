@@ -22,12 +22,27 @@ export type DetectorEvent =
 
 export type ResultMode = "authentic" | "ai-generated";
 
+export type AnomalyCategory =
+  | "none"
+  | "object_inconsistency"
+  | "texture_jitter"
+  | "interaction_anomaly"
+  | "movement_anomaly";
+
 export interface DetectorResult {
   mode: ResultMode;
   score: number;
   likelihoodLabel: "AI-likelihood";
   classification: "Likely Authentic" | "Likely AI-Generated";
   bullets: string[];
+  videoId?: string;
+  videoTitle?: string;
+  groundTruth?: ResultMode;
+  anomalyCategory?: AnomalyCategory;
+  inferenceTimeMs?: number;
+  frameSampleCount?: number;
+  modelVersion?: string;
+  nonForensicNotice?: string;
   details: {
     summary: string;
     frameConsistency: string;
@@ -36,6 +51,19 @@ export interface DetectorResult {
     temporalArtifactSignal: string;
     decision: string;
   };
+}
+
+export interface PerformanceMetrics {
+  sampleSize: number;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1Score: number;
+  averageInferenceTimeMs: number;
+  truePositive: number;
+  trueNegative: number;
+  falsePositive: number;
+  falseNegative: number;
 }
 
 export interface DetectorSnapshot {

@@ -9,6 +9,11 @@ whenever a phase item is completed, a blocker is found, a dataset assumption
 changes, a model run is produced, a release is pushed, or an implementation
 decision changes.
 
+Current MVP scope: complete AgilaEye as a simulated Facebook-style environment
+with embedded videos, repeated scan flow, deterministic per-video scan outputs,
+and SOP performance metrics. Dataset download, Python training, real inference,
+and sidecar packaging are research-extension work, not MVP blockers.
+
 ## How To Update This Tracker
 
 Status keys:
@@ -39,37 +44,26 @@ Update rules:
 
 ## Executive Summary
 
-Current overall assessment:
+Current overall assessment for the simulated embedded-video MVP:
 
-- Overall research-prototype completion: 24%
-- Documentation and scaffolding-plan readiness: 98%
-- Local simulated app/demo readiness: 92%
-- Dataset acquisition readiness: 8%
-- Preprocessing pipeline readiness: 0%
-- Baseline model readiness: 0%
-- Explainability pipeline readiness: 0%
-- Evaluation/reporting readiness: 4%
-- Python sidecar integration readiness: 0%
-- Public/production detector readiness: 3%
+- Overall MVP completion: 78%
+- Local simulated app/demo readiness: 94%
+- Embedded video feed readiness: 85%
+- Deterministic scan-result readiness: 90%
+- SOP metrics readiness: 92%
+- Documentation alignment with MVP scope: 70%
+- Public/production detector readiness: not planned for MVP
 
-Plain answer to "is AgilaEye ready to download the dataset and become a real
-detector?":
+Plain answer to "is AgilaEye ready for the intended simulated Facebook-style
+demo?":
 
-The repo is now ready for a disciplined dataset and ML scaffold to begin, but it
-is not yet a real AI-generated video detector. The current HaribonEye app is a
-strong local Svelte/Tauri simulation with a working detector overlay, state
-machine, mock results, tests, and CI. The documentation foundation now defines
-the research defaults, dataset policy, pre-mortem risks, manifest schema,
-preprocessing rules, PyTorch MobileNetV3-Small baseline, Grad-CAM explanation
-strategy, evaluation outputs, Python sidecar contract, ethics limits, runbooks,
-and ADRs.
-
-The next real implementation step is Phase 1: create the Python dataset tooling
-and a dry-run/download/import path for a reproducible 100-video pilot subset
-from official GenVideo or GenVideo-100K sources. Nothing has been downloaded,
-preprocessed, trained, evaluated, or connected to the UI yet. The app remains
-demo-ready for simulated behavior and documentation-ready for scaffolding; it is
-not research-result-ready or production-ready.
+The repo is close. The current HaribonEye app has a working detector overlay,
+state machine, embedded-video feed, deterministic scan outputs, SOP metric math,
+and a visible metrics panel. The remaining MVP work is to finish copy/doc
+alignment, strengthen tests around the new UI pieces, run the full CI gate, and
+optionally start the dev server for a visual smoke check. It is intentionally
+not a real AI-generated video detector and should not be judged against dataset
+download, PyTorch training, or production inference requirements.
 
 ## Evidence Consulted
 
@@ -123,6 +117,11 @@ Verification highlights through 2026-06-14:
 - `[x]` `npm run ci` passed after the documentation foundation pass:
   `svelte-check` clean, 15 Vitest tests passed, and Vite production build
   completed.
+- `[x]` `npm run ci` passed after the embedded-video simulation pass:
+  `svelte-check` clean, 20 Vitest tests passed, and Vite production build
+  completed.
+- `[x]` Local Vite dev server on `http://127.0.0.1:1420/` returned `200 OK`
+  after the embedded-video simulation pass.
 - `[x]` `npm run check` passed as part of CI.
 - `[x]` `npm run test` passed as part of CI.
 - `[x]` `npm run build` passed as part of CI.
@@ -155,6 +154,8 @@ Current inventory:
 - 0 trained model artifacts.
 - 0 generated Grad-CAM outputs.
 - 0 evaluation reports.
+- 1 embedded-video simulation library.
+- 1 SOP metrics panel.
 
 ## Current Functional Map
 
@@ -176,6 +177,11 @@ Current inventory:
   evaluation, sidecar, and ethics rules.
 - `[x]` Pre-mortem guardrails identify the main ways the project can fail before
   scaffolding.
+- `[x]` Embedded video catalog exists for the simulated Facebook-style feed.
+- `[x]` SOP metrics are computed from deterministic ground-truth and predicted
+  labels in code.
+- `[x]` The right sidebar displays accuracy, precision, recall, F1-score,
+  average inference time, and confusion counts.
 
 ### Partially Functioning
 
@@ -190,6 +196,9 @@ Current inventory:
   evaluation command exists.
 - `[~]` Runbooks: dataset, training, and evaluation runbooks exist, but they are
   not executable yet.
+- `[~]` Documentation alignment: ADR-0006 and context now define the simulated
+  MVP scope, but older research-extension docs still describe the parked Python
+  track.
 
 ### Not Functioning Yet For The Real Detector
 
@@ -579,4 +588,8 @@ Acceptance:
   and Vite production build passed.
 - 2026-06-14: Added this system progress tracker as the living control document
   for AgilaEye readiness.
-
+- 2026-06-14: Updated MVP scope to simulated embedded-video scanning, added
+  deterministic per-video scan outputs, computed SOP metrics, and parked
+  dataset/Python sidecar work as a research extension.
+- 2026-06-14: Verified embedded-video simulation pass with `npm run ci` and a
+  local `200 OK` response from `http://127.0.0.1:1420/`.

@@ -30,6 +30,9 @@
   </div>
 
   <div class="mt-2 text-center">
+    {#if result.videoTitle}
+      <p class="mb-1 truncate text-[11px] font-bold text-slate-500">{result.videoTitle}</p>
+    {/if}
     <p class={`text-3xl font-extrabold leading-none ${isAuthentic ? "text-primary" : "text-generated"}`}>
       {result.score}%
     </p>
@@ -47,6 +50,17 @@
   <div class="mt-3">
     <ExplanationList bullets={result.bullets} />
   </div>
+
+  {#if result.inferenceTimeMs || result.frameSampleCount}
+    <div class="mt-3 grid grid-cols-2 gap-2 text-center text-[10px] font-bold text-slate-500">
+      <div class="rounded-md bg-slate-100 px-2 py-1.5">
+        {result.frameSampleCount ?? 8} frames
+      </div>
+      <div class="rounded-md bg-slate-100 px-2 py-1.5">
+        {result.inferenceTimeMs ?? 0} ms
+      </div>
+    </div>
+  {/if}
 
   <div class="mt-3 grid grid-cols-2 gap-2">
     <button

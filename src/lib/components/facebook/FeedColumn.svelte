@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { DetectorSnapshot } from "../../engine/types";
+  import { simulatedVideoPosts } from "../../engine/simulatedVideoLibrary";
   import PlaceholderPost from "./PlaceholderPost.svelte";
   import VideoPostCard from "./VideoPostCard.svelte";
 
@@ -10,24 +11,28 @@
 </script>
 
 <section class="feed-scrollbar mx-auto w-full max-w-[660px] space-y-4 pb-24">
-  <PlaceholderPost compact title="Research Circle PH" body="New notes from the media literacy pilot group are ready for review." />
-  <VideoPostCard
-    {snapshot}
-    {onVisibilityChange}
-    {onViewDetails}
-    {onRescan}
-  />
-  <PlaceholderPost
-    title="UP Digital Society"
-    body="Panel discussion highlights: classroom-ready tools should be explainable, lightweight, and respectful of privacy."
-  />
-  <PlaceholderPost
-    title="Civic Media Lab"
-    body="Field observers are comparing examples of authentic, edited, and synthetic videos in social feeds."
-  />
-  <PlaceholderPost
-    title="AgilaEye Pilot Notes"
-    body="A second mock video appears here so scrolling can interrupt and restart the detector demonstration."
-    video
-  />
+  <PlaceholderPost compact title="Research Circle PH" body="SOP pilot feed: scroll through embedded clips and let HaribonEye scan the active video." />
+
+  {#each simulatedVideoPosts as post, index}
+    <VideoPostCard
+      {post}
+      {snapshot}
+      {onVisibilityChange}
+      {onViewDetails}
+      {onRescan}
+    />
+
+    {#if index === 1}
+      <PlaceholderPost
+        title="UP Digital Society"
+        body="Panel discussion highlights: classroom-ready tools should be explainable, lightweight, and respectful of privacy."
+      />
+    {:else if index === 3}
+      <PlaceholderPost
+        title="AgilaEye Pilot Notes"
+        body="The scanner reports SOP metrics from this fixed embedded-video set: accuracy, precision, recall, F1-score, and inference time."
+        video
+      />
+    {/if}
+  {/each}
 </section>

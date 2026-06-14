@@ -3,6 +3,14 @@
 This roadmap moves AgilaEye from a polished simulation to a documented,
 reproducible research prototype.
 
+## Current MVP Scope Update
+
+ADR-0006 supersedes the dataset/Python sidecar track for MVP completion. The
+active completion target is now a simulated Facebook-style feed with embedded
+videos, deterministic scan outputs, and SOP metrics computed from the embedded
+evaluation set. Dataset download, PyTorch training, Grad-CAM file generation,
+and Python sidecar integration are parked as research-extension work.
+
 ## Phase 0: Documentation Baseline
 
 Status: current pass.
@@ -153,4 +161,3 @@ Acceptance:
 - A clean machine can run the app with documented setup.
 - Missing Python/model artifacts produce helpful errors.
 - Package size and model artifact handling are documented.
-

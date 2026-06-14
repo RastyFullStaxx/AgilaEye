@@ -5,6 +5,14 @@ prototype with a local Python detector sidecar. This document describes the
 current modules, target modules, and the interfaces that should stay stable
 during scaffolding.
 
+## MVP Scope Update
+
+ADR-0006 defines the active MVP target: a simulated Facebook-style environment
+with embedded videos, deterministic scan outputs, and SOP metrics computed from
+the embedded evaluation set. The Python sidecar and real ML pipeline described
+below are parked as research-extension architecture, not MVP completion
+requirements.
+
 ## Current Modules
 
 ### Svelte/Tauri App
@@ -158,4 +166,3 @@ The Svelte adapter can transform this into the existing `DetectorResult` shape.
 - Keep generated data and artifacts out of git.
 - Keep report metrics tied to a manifest and model version.
 - Keep user-facing copy probabilistic and supportive.
-

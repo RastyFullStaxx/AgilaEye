@@ -1,10 +1,14 @@
 <script lang="ts">
+  import PerformanceMetricsPanel from "../detector/PerformanceMetricsPanel.svelte";
+
   const contacts = ["Meta AI", "Ejay Buscato", "Roanne Maye Dinglasa", "Rochelle Mendoza", "Neomi"];
 </script>
 
 <aside class="sticky top-[68px] hidden h-[calc(100vh-80px)] overflow-hidden xl:block">
+  <PerformanceMetricsPanel />
+
   <section>
-    <h2 class="mb-3 text-sm font-semibold text-slate-500">Sponsored</h2>
+    <h2 class="mb-3 mt-5 text-sm font-semibold text-slate-500">Sponsored</h2>
     <div class="space-y-3">
       <div class="grid grid-cols-[116px_1fr] gap-3 rounded-lg p-2 transition hover:bg-white/80">
         <div class="h-24 rounded-md bg-[radial-gradient(circle_at_35%_35%,#f4b23a,transparent_28%),linear-gradient(135deg,#6b4d2f,#1f2937)]"></div>

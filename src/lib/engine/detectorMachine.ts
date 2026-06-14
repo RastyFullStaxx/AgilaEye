@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 import { createEventBus } from "./eventBus";
-import { getMockResult } from "./mockResults";
+import { getPredictedModeForVideo, getSimulatedResultForVideo } from "./simulatedVideoLibrary";
 import type {
   DetectorEvent,
   DetectorEventPayload,
@@ -40,6 +40,7 @@ export function createDetectorController() {
   let activeVideoVisible = false;
   let activeVideoId: string | null = null;
   let resultMode: ResultMode = "authentic";
+  let manualResultMode: ResultMode | null = null;
   let startupGateOpen = false;
 
   function setSnapshot(next: Partial<DetectorSnapshot>, event: DetectorEvent, payload?: DetectorEventPayload) {
@@ -127,7 +128,8 @@ export function createDetectorController() {
       return;
     }
 
-    const result = getMockResult(resultMode);
+    const result = getSimulatedResultForVideo(activeVideoId, manualResultMode ?? undefined);
+    resultMode = result.mode;
     setSnapshot(
       {
         state: resultMode === "authentic" ? "RESULT_AUTHENTIC" : "RESULT_AI_GENERATED",
@@ -164,12 +166,16 @@ export function createDetectorController() {
   function becomeActive(event: DetectorEvent, payload?: DetectorEventPayload) {
     activeVideoVisible = true;
     activeVideoId = payload?.videoId ?? activeVideoId ?? "main-video";
+    if (!manualResultMode) {
+      resultMode = getPredictedModeForVideo(activeVideoId);
+    }
     clearAllTimers();
     setSnapshot(
       {
         state: "IDLE_DETECTED",
         progress: 0,
         result: null,
+        resultMode,
         activeVideoId,
         isActiveVideoVisible: true,
         visibilityRatio: payload?.ratio ?? snapshot.visibilityRatio
@@ -292,8 +298,9 @@ export function createDetectorController() {
   }
 
   function setResultMode(mode: ResultMode) {
+    manualResultMode = mode;
     resultMode = mode;
-    const result = getMockResult(mode);
+    const result = getSimulatedResultForVideo(activeVideoId, mode);
     const state =
       snapshot.state === "RESULT_AUTHENTIC" || snapshot.state === "RESULT_AI_GENERATED"
         ? mode === "authentic"
