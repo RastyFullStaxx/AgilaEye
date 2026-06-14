@@ -7,6 +7,13 @@ src-tauri/target
 src-tauri/gen
 *.log
 
+# Local research data and generated artifacts
+data/raw/
+data/processed/
+artifacts/models/
+artifacts/explanations/
+reports/evaluation/
+
 # Agent configuration (local only)
 AGENTS.md
 .opencode/agents/*.md
