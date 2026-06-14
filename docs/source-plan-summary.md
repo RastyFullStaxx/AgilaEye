@@ -1,7 +1,7 @@
 # Source Plan Summary
 
 This file translates `docs/AgileEye.docx` into implementation-ready guidance for
-the AgilaEye repository. The source document remains the research plan of record;
+the AgileEye repository. The source document remains the research plan of record;
 this summary exists so future scaffolding work can start from clear engineering
 defaults instead of re-reading the whole DOCX.
 

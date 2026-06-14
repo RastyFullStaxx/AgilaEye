@@ -6,20 +6,19 @@ Accepted
 
 ## Context
 
-The repository path and research system use AgilaEye, while the existing Tauri
-app product name and UI copy use HaribonEye. Without a policy, future docs,
-packages, diagrams, and screenshots can drift.
+The repository, research system, Tauri app, UI copy, package metadata, and docs
+now use one product name. Without a policy, future docs, packages, diagrams,
+and screenshots can drift back into legacy names.
 
 ## Decision
 
-Use AgilaEye for repository, system, architecture, dataset, ML, and research
-documentation. Use HaribonEye for the current app/prototype product name and
-existing Tauri UI branding.
+Use AgileEye everywhere for repository, system, architecture, dataset, ML,
+research documentation, app metadata, and UI branding.
 
 ## Consequences
 
-- Future docs should refer to "AgilaEye" unless specifically discussing the app
-  shell or UI product name.
-- Renaming HaribonEye UI strings is a separate future decision.
-- Dataset and Python package naming should use AgilaEye.
-
+- Future docs should refer to "AgileEye" unless quoting an external or archived
+  legacy source.
+- Legacy names should not be reintroduced into package names, app copy, or
+  documentation.
+- Dataset and Python package naming should use AgileEye.

@@ -1,6 +1,31 @@
 # Runbook: Training
 
-This runbook is for the future PyTorch training scaffold.
+## Current Pilot MLP Training
+
+Run the complete current pipeline:
+
+```bash
+npm run ml:pipeline
+```
+
+Or run each step:
+
+```bash
+npm run data:validate
+npm run ml:preprocess
+npm run ml:train
+npm run ml:evaluate
+```
+
+Generated artifacts:
+
+- `data/processed/manifests/pilot-100.features.csv`
+- `artifacts/models/agileeye-pilot-mlp-v1.json`
+- `reports/evaluation/pilot-mlp-v1/`
+
+These paths are ignored by git.
+
+## Future PyTorch Training Scaffold
 
 ## Preconditions
 
@@ -11,7 +36,7 @@ This runbook is for the future PyTorch training scaffold.
 
 ## Target
 
-Train the v1 lightweight baseline:
+Train the heavier PyTorch baseline:
 
 - Frozen MobileNetV3-Small feature extractor.
 - Temporal average pooling.
@@ -46,4 +71,3 @@ Train the v1 lightweight baseline:
 - If threshold changes, document the validation metric and reason.
 - If hardware is insufficient, record the hardware limit and stop before
   shrinking the dataset without approval.
-

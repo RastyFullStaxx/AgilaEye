@@ -62,7 +62,7 @@ describe("detectorMachine", () => {
     vi.advanceTimersByTime(3000);
     expect(snapshot().state).toBe("RESULT_AUTHENTIC");
     expect(snapshot().result).toMatchObject({
-      score: 18,
+      score: 19,
       likelihoodLabel: "AI-likelihood",
       classification: "Likely Authentic"
     });

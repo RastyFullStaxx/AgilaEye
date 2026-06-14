@@ -8,7 +8,7 @@ preprocessing, training, evaluation, and explanation scripts.
 
 | Field | Required | Description |
 | --- | --- | --- |
-| `video_id` | Yes | Stable repository-local ID, for example `agilaeye_0001`. |
+| `video_id` | Yes | Stable repository-local ID, for example `agileeye_0001`. |
 | `source_path` | Yes | Local path under `data/raw/` or an operator-provided source path. |
 | `source_dataset` | Yes | Dataset name, such as `GenVideo` or `GenVideo-100K`. |
 | `source_category` | Yes | Original source or generator category when available. |
@@ -45,7 +45,7 @@ preprocessing, training, evaluation, and explanation scripts.
 
 ```csv
 video_id,source_path,source_dataset,source_category,binary_label,anomaly_category,split,duration_seconds,resolution_width,resolution_height,fps,checksum_sha256,quality_status,notes
-agilaeye_0001,data/raw/genvideo/example.mp4,GenVideo-100K,Pika,ai_generated,texture_jitter,train,3.0,1088,640,24,examplechecksum,valid,selected by seed 42 pilot sampler
+agileeye_0001,data/raw/genvideo/example.mp4,GenVideo-100K,Pika,ai_generated,texture_jitter,train,3.0,1088,640,24,examplechecksum,valid,selected by seed 42 pilot sampler
 ```
 
 ## Validation Checks

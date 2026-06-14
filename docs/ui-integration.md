@@ -19,12 +19,38 @@ The detector controller owns:
 This behavior should continue to work whether results come from mocks or a
 future sidecar.
 
-## Future Sidecar Command
+## Current Sidecar Command
+
+The repository now includes a lightweight Python sidecar scaffold that mirrors
+the app's local MLP over embedded feature vectors:
+
+```bash
+PYTHONPATH=model python3 -m agileeye_detector.infer --video-id synthetic-city-walk
+```
+
+It is useful for contract smoke tests and future Tauri invocation work. It is
+not yet a frame-level PyTorch video model.
+
+The trained pilot MLP sidecar path accepts a model artifact and a local video:
+
+```bash
+npm run ml:infer:sample
+```
+
+Equivalent command shape:
+
+```bash
+python3 -m agileeye_detector.infer \
+  --model artifacts/models/agileeye-pilot-mlp-v1.json \
+  --video data/raw/pilot-100/test/ai_generated/agileeye_0091.mp4
+```
+
+## Future Dataset-Trained Sidecar Command
 
 Target command:
 
 ```bash
-python -m agilaeye_detector.infer --video <path> --out <json>
+python -m agileeye_detector.infer --video <path> --out <json>
 ```
 
 The sidecar should perform local inference and write a JSON result. Tauri can
@@ -36,15 +62,15 @@ Expected fields:
 
 ```json
 {
-  "video_id": "agilaeye_0001",
+  "video_id": "agileeye_0001",
   "prediction_label": "Likely AI-Generated",
   "result_mode": "ai-generated",
   "ai_likelihood": 0.82,
   "threshold": 0.5,
   "explanation_summary": "The model focused on texture regions with unstable surface details.",
   "anomaly_category": "texture_jitter",
-  "representative_frames": ["data/processed/frames/test/agilaeye_0001/frame_003.jpg"],
-  "heatmap_paths": ["artifacts/explanations/run-001/agilaeye_0001/frame_003.png"],
+  "representative_frames": ["data/processed/frames/test/agileeye_0001/frame_003.jpg"],
+  "heatmap_paths": ["artifacts/explanations/run-001/agileeye_0001/frame_003.png"],
   "inference_time_ms": 842.5,
   "model_version": "mobilenetv3-small-mlp-001",
   "non_forensic_notice": "This is a first-level screening result, not a final authenticity decision."
@@ -82,4 +108,3 @@ Real UI integration is ready when:
 - Sidecar success, timeout, and invalid JSON are tested.
 - Scanning can still be interrupted by active-video changes.
 - Result copy remains probabilistic.
-

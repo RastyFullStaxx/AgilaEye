@@ -37,7 +37,7 @@
         <DetectorIcon size={24} />
       </div>
       <div class="min-w-0 flex-1">
-        <h2 id="details-title" class="text-base font-extrabold text-slate-950">HaribonEye details</h2>
+        <h2 id="details-title" class="text-base font-extrabold text-slate-950">AgileEye details</h2>
         <p class="mt-1 text-sm leading-5 text-slate-600">{result.details.summary}</p>
       </div>
       <button

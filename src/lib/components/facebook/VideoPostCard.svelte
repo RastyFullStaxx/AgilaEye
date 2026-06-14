@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import FloatingDetectorOverlay from "../detector/FloatingDetectorOverlay.svelte";
   import { createViewportDetector } from "../../engine/useViewportDetector";
-  import type { SimulatedVideoPost } from "../../engine/simulatedVideoLibrary";
+  import { runSimulatedVideoModel, type SimulatedVideoPost } from "../../engine/simulatedVideoLibrary";
   import type { DetectorSnapshot } from "../../engine/types";
 
   export let post: SimulatedVideoPost;
@@ -15,6 +15,7 @@
 
   $: isActive = snapshot.activeVideoId === post.id;
   $: isScanning = isActive && snapshot.state === "SCANNING";
+  $: modelPrediction = runSimulatedVideoModel(post.id);
   $: toneClass =
     post.accent === "red"
       ? "from-generated to-rose-900"
@@ -100,7 +101,7 @@
   <div class="flex items-center gap-6 border-t border-slate-100 px-4 py-2 text-sm text-slate-500">
     <span>Scan target</span>
     <span>{post.inferenceTimeMs} ms</span>
-    <span>{post.predictedMode === "authentic" ? "Low risk" : "Flagged"}</span>
+    <span>{modelPrediction.mode === "authentic" ? "Low risk" : "Flagged"}</span>
     <div class="ml-auto flex -space-x-1">
       <span class="h-5 w-5 rounded-full bg-primary"></span>
       <span class="h-5 w-5 rounded-full bg-generated"></span>

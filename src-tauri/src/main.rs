@@ -1,3 +1,3 @@
 fn main() {
-    hariboneye_lib::run()
+    agileeye_lib::run()
 }

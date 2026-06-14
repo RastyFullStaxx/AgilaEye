@@ -1,6 +1,6 @@
 # Explainability
 
-AgilaEye explanations should help users understand model cues without implying
+AgileEye explanations should help users understand model cues without implying
 forensic certainty.
 
 ## Method

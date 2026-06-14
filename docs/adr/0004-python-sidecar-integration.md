@@ -17,7 +17,7 @@ Introduce real inference through a local Python sidecar command that writes JSON
 for the app:
 
 ```bash
-python -m agilaeye_detector.infer --video <path> --out <json>
+python -m agileeye_detector.infer --video <path> --out <json>
 ```
 
 The Svelte/Tauri app should keep the existing detector state machine and adapt

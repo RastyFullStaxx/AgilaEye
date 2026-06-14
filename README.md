@@ -1,14 +1,13 @@
-# AgilaEye / HaribonEye
+# AgileEye
 
-AgilaEye is the repository and system name. HaribonEye is the current Tauri/Svelte
-prototype product name shown in the desktop app.
+AgileEye is the repository, research system, and current Tauri/Svelte prototype
+product name shown in the desktop app.
 
-HaribonEye is a polished front-end prototype for a lightweight explainable
+AgileEye is a polished front-end prototype for a lightweight explainable
 AI-generated video detector during Facebook-style video browsing. The MVP scope
-is intentionally simulated: embedded feed videos are scanned by a deterministic
-local simulation that reports SOP-style performance metrics. There is no real
-model inference, Facebook integration, screen capture, scraping, or dataset
-download in the MVP.
+uses embedded feed videos scanned by a deterministic local MLP model that
+reports SOP-style performance metrics. There is no PyTorch sidecar inference,
+Facebook integration, screen capture, scraping, or dataset download in the MVP.
 
 ## Current Status
 
@@ -16,11 +15,13 @@ download in the MVP.
 - Tauri v2 desktop shell with minimal Rust backend.
 - Embedded Facebook-style video feed.
 - Simulated detector state machine and result panels.
-- Deterministic per-video scan outputs.
+- Deterministic feature vectors and a local MLP classifier for per-video scan
+  outputs.
 - SOP metrics panel for accuracy, precision, recall, F1-score, and average
   inference time across the embedded evaluation set.
-- No real AI inference, screen capture, scraping, browser extension injection,
-  webcam access, Facebook integration, dataset download, or video frame analysis.
+- No screen capture, scraping, browser extension injection, webcam access,
+  Facebook integration, dataset download, PyTorch inference, or video frame
+  analysis.
 
 ## Quick Commands
 
@@ -64,11 +65,36 @@ npm run tauri dev
 
 Rust/Cargo is required for Tauri commands.
 
+Local detector sidecar smoke test:
+
+```bash
+PYTHONPATH=model python3 -m agileeye_detector.infer --video-id synthetic-city-walk
+PYTHONPATH=model python3 -m unittest discover -s model/tests
+```
+
+Dataset pilot acquisition after downloading `GenVideo-Val.zip`:
+
+```bash
+FFPROBE_PATH="$(node -e 'console.log(require("@ffprobe-installer/ffprobe").path)')" \
+  python3 scripts/acquire_genvideo_pilot.py \
+  --zip data/raw/modelscope/GenVideo-Val.zip \
+  --out-dir data/raw/pilot-100 \
+  --manifest data/processed/manifests/pilot-100.csv
+```
+
+Dataset-backed pilot MLP pipeline:
+
+```bash
+npm run data:validate
+npm run ml:pipeline
+npm run ml:infer:sample
+```
+
 ## Documentation Map
 
 - `CONTEXT.md` - domain vocabulary, naming policy, goals, constraints, and
   non-goals.
-- `docs/agilaeye-system-progress-tracker.md` - living readiness tracker,
+- `docs/agileeye-system-progress-tracker.md` - living readiness tracker,
   phase checklist, blockers, and update log.
 - `docs/adr/0006-simulated-embedded-video-mvp.md` - current MVP scope decision.
 - `docs/source-plan-summary.md` - implementation-friendly summary of
@@ -89,6 +115,23 @@ Rust/Cargo is required for Tauri commands.
 - `docs/runbooks/` - future operator steps for dataset download, training, and
   evaluation.
 - `docs/adr/` - accepted architecture decisions.
+
+## Model Status
+
+The working models currently in the repo are:
+
+- App demo MLP: `src/lib/engine/mlpModel.ts`
+- Embedded sidecar MLP: `model/agileeye_detector/mlp.py`
+- Dataset-backed pilot MLP: `model/agileeye_detector/pilot_mlp.py`
+- Preprocessing command: `python3 -m agileeye_detector.preprocess`
+- Training command: `python3 -m agileeye_detector.train`
+- Evaluation command: `python3 -m agileeye_detector.evaluate`
+- Sidecar command: `python3 -m agileeye_detector.infer`
+
+The dataset-backed pilot MLP scores ffmpeg-derived visual features from the
+100-video pilot set and emits the documented detector result contract. The
+MobileNetV3-Small-plus-MLP model remains the next heavier baseline once PyTorch
+is added.
 
 ## Data And Artifact Policy
 

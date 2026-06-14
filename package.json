@@ -1,8 +1,12 @@
 {
-  "name": "agilaeye-hariboneye-prototype",
+  "name": "agileeye-prototype",
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 1420",
     "dev:fresh": "npm run clean:vite && vite --host 127.0.0.1 --port 1420 --force",
@@ -14,6 +18,13 @@
     "test": "node ./scripts/run-vitest.mjs run",
     "test:watch": "node ./scripts/run-vitest.mjs",
     "ci": "npm run check && npm run test && npm run build",
+    "py:test": "PYTHONPATH=model python3 -m unittest discover -s model/tests",
+    "data:validate": "PYTHONPATH=model python3 -m agileeye_detector.validate_manifest --manifest data/processed/manifests/pilot-100.csv --expect-pilot-100",
+    "ml:preprocess": "FFMPEG_PATH=\"$(node -e 'console.log(require(\"@ffmpeg-installer/ffmpeg\").path)')\" PYTHONPATH=model python3 -m agileeye_detector.preprocess --manifest data/processed/manifests/pilot-100.csv --out data/processed/manifests/pilot-100.features.csv",
+    "ml:train": "PYTHONPATH=model python3 -m agileeye_detector.train --features data/processed/manifests/pilot-100.features.csv --out artifacts/models/agileeye-pilot-mlp-v1.json --seed 42 --epochs 600",
+    "ml:evaluate": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v1.json --out-dir reports/evaluation/pilot-mlp-v1 --split test",
+    "ml:infer:sample": "FFMPEG_PATH=\"$(node -e 'console.log(require(\"@ffmpeg-installer/ffmpeg\").path)')\" PYTHONPATH=model python3 -m agileeye_detector.infer --model artifacts/models/agileeye-pilot-mlp-v1.json --video data/raw/pilot-100/test/ai_generated/agileeye_0091.mp4",
+    "ml:pipeline": "npm run data:validate && npm run ml:preprocess && npm run ml:train && npm run ml:evaluate",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -21,7 +32,9 @@
     "svelte": "^5.0.0"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "4.0.4",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tauri-apps/cli": "^2.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/svelte": "^5.2.6",
@@ -31,7 +44,7 @@
     "svelte-check": "^4.1.0",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.6.3",
-    "vite": "5.4.21",
-    "vitest": "^2.1.8"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   }
 }

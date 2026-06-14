@@ -33,6 +33,20 @@ Optional metrics:
 - Report hardware used for timing.
 - Do not tune threshold on the test split.
 
+## Current Command
+
+The current pilot MLP evaluation command is:
+
+```bash
+npm run ml:evaluate
+```
+
+Current generated report path:
+
+```text
+reports/evaluation/pilot-mlp-v1/
+```
+
 ## Report Outputs
 
 Generated outputs should live under:
@@ -77,4 +91,3 @@ Evaluation is complete when:
 - Prediction rows include video ID, true label, predicted label, score, and
   inference time.
 - Summary copy states that results come from a 100-video pilot study.
-

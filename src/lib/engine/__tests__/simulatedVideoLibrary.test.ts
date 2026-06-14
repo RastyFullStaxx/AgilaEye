@@ -59,7 +59,7 @@ describe("simulatedVideoLibrary", () => {
       anomalyCategory: "texture_jitter",
       frameSampleCount: 8,
       inferenceTimeMs: 804,
-      modelVersion: "AgilaEye-SOP-Sim-v1"
+      modelVersion: "AgileEye-MLP-Sim-v1"
     });
   });
 });

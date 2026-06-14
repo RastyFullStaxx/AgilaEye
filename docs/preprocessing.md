@@ -30,6 +30,25 @@ must be deterministic, lightweight, and safe to repeat.
 9. Write processed outputs under `data/processed/`.
 10. Record quality status and any exclusions.
 
+## Current Command
+
+The current working preprocessing command writes compact video-level features
+for the pilot MLP:
+
+```bash
+npm run ml:preprocess
+```
+
+Output:
+
+```text
+data/processed/manifests/pilot-100.features.csv
+```
+
+The current implementation extracts eight frames through ffmpeg and computes
+video-level luminance, color, temporal, and edge-energy features. The heavier
+MobileNetV3 tensor preprocessing path remains a future extension.
+
 ## Output Layout
 
 Recommended local layout:
@@ -66,4 +85,3 @@ Future preprocessing tests should cover:
 - Corrupted or unreadable file.
 - Manifest split preservation.
 - Repeated run with identical output for the same seed and inputs.
-

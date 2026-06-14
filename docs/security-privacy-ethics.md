@@ -1,6 +1,6 @@
 # Security, Privacy, And Ethics
 
-AgilaEye is a research prototype for first-level screening. It must avoid
+AgileEye is a research prototype for first-level screening. It must avoid
 collecting private data, overclaiming model certainty, or encouraging unsafe use.
 
 ## Privacy Rules

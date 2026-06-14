@@ -1,6 +1,25 @@
 # Runbook: Evaluation
 
-This runbook is for the future evaluation scaffold.
+## Current Pilot MLP Evaluation
+
+Run:
+
+```bash
+npm run ml:evaluate
+```
+
+Inspect:
+
+```text
+reports/evaluation/pilot-mlp-v1/metrics.json
+reports/evaluation/pilot-mlp-v1/predictions.csv
+reports/evaluation/pilot-mlp-v1/summary.md
+```
+
+The current first-pass report uses only the held-out test split from
+`data/processed/manifests/pilot-100.features.csv`.
+
+## Future PyTorch Evaluation Scaffold
 
 ## Preconditions
 
@@ -45,4 +64,3 @@ Generate a reproducible pilot evaluation report with:
 - If invalid rows are discovered, update the manifest quality status and rerun
   from preprocessing.
 - If results are poor, report them as pilot findings. Do not hide failed runs.
-

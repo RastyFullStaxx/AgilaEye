@@ -1,3 +1,4 @@
+import { runMlpInference, type FeatureVector, type MlpPrediction } from "./mlpModel";
 import type { AnomalyCategory, DetectorResult, PerformanceMetrics, ResultMode } from "./types";
 
 export interface SimulatedVideoPost {
@@ -12,15 +13,13 @@ export interface SimulatedVideoPost {
   videoSrc: string;
   accent: "blue" | "amber" | "red" | "green";
   groundTruth: ResultMode;
-  predictedMode: ResultMode;
-  score: number;
+  features: FeatureVector;
   inferenceTimeMs: number;
   anomalyCategory: AnomalyCategory;
   bullets: string[];
   details: DetectorResult["details"];
 }
 
-const MODEL_VERSION = "AgilaEye-SOP-Sim-v1";
 const NON_FORENSIC_NOTICE = "First-level screening only. Not a final authenticity decision.";
 
 export const simulatedVideoPosts: SimulatedVideoPost[] = [
@@ -36,8 +35,14 @@ export const simulatedVideoPosts: SimulatedVideoPost[] = [
     videoSrc: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     accent: "blue",
     groundTruth: "authentic",
-    predictedMode: "authentic",
-    score: 18,
+    features: {
+      textureInstability: 0.12,
+      objectBoundaryDrift: 0.08,
+      interactionMismatch: 0.05,
+      motionIrregularity: 0.1,
+      compressionNoise: 0.16,
+      naturalContinuity: 0.9
+    },
     inferenceTimeMs: 732,
     anomalyCategory: "none",
     bullets: ["Consistent frame texture", "Stable lighting and shadows", "Natural object boundaries"],
@@ -62,8 +67,14 @@ export const simulatedVideoPosts: SimulatedVideoPost[] = [
     videoSrc: "https://media.w3.org/2010/05/sintel/trailer.mp4",
     accent: "red",
     groundTruth: "ai-generated",
-    predictedMode: "ai-generated",
-    score: 86,
+    features: {
+      textureInstability: 0.88,
+      objectBoundaryDrift: 0.46,
+      interactionMismatch: 0.25,
+      motionIrregularity: 0.74,
+      compressionNoise: 0.34,
+      naturalContinuity: 0.18
+    },
     inferenceTimeMs: 804,
     anomalyCategory: "texture_jitter",
     bullets: ["Texture shimmer across frames", "Synthetic edge softness", "Elevated temporal artifact signal"],
@@ -88,8 +99,14 @@ export const simulatedVideoPosts: SimulatedVideoPost[] = [
     videoSrc: "https://media.w3.org/2010/05/bunny/trailer.mp4",
     accent: "green",
     groundTruth: "authentic",
-    predictedMode: "authentic",
-    score: 24,
+    features: {
+      textureInstability: 0.18,
+      objectBoundaryDrift: 0.12,
+      interactionMismatch: 0.08,
+      motionIrregularity: 0.2,
+      compressionNoise: 0.4,
+      naturalContinuity: 0.82
+    },
     inferenceTimeMs: 691,
     anomalyCategory: "none",
     bullets: ["Natural motion continuity", "Stable surface detail", "Low synthetic artifact signal"],
@@ -114,8 +131,14 @@ export const simulatedVideoPosts: SimulatedVideoPost[] = [
     videoSrc: "https://media.w3.org/2010/05/video/movie_300.mp4",
     accent: "amber",
     groundTruth: "ai-generated",
-    predictedMode: "ai-generated",
-    score: 79,
+    features: {
+      textureInstability: 0.42,
+      objectBoundaryDrift: 0.9,
+      interactionMismatch: 0.25,
+      motionIrregularity: 0.55,
+      compressionNoise: 0.22,
+      naturalContinuity: 0.25
+    },
     inferenceTimeMs: 768,
     anomalyCategory: "object_inconsistency",
     bullets: ["Object edge drift", "Boundary shape inconsistency", "Mild lighting mismatch"],
@@ -140,8 +163,14 @@ export const simulatedVideoPosts: SimulatedVideoPost[] = [
     videoSrc: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     accent: "blue",
     groundTruth: "authentic",
-    predictedMode: "ai-generated",
-    score: 63,
+    features: {
+      textureInstability: 0.35,
+      objectBoundaryDrift: 0.18,
+      interactionMismatch: 0.2,
+      motionIrregularity: 0.72,
+      compressionNoise: 0.86,
+      naturalContinuity: 0.48
+    },
     inferenceTimeMs: 826,
     anomalyCategory: "movement_anomaly",
     bullets: ["Compression confused the scanner", "Motion blur raised the score", "Review recommended before sharing"],
@@ -166,8 +195,14 @@ export const simulatedVideoPosts: SimulatedVideoPost[] = [
     videoSrc: "https://media.w3.org/2010/05/sintel/trailer.mp4",
     accent: "red",
     groundTruth: "ai-generated",
-    predictedMode: "ai-generated",
-    score: 91,
+    features: {
+      textureInstability: 0.62,
+      objectBoundaryDrift: 0.45,
+      interactionMismatch: 0.95,
+      motionIrregularity: 0.88,
+      compressionNoise: 0.3,
+      naturalContinuity: 0.14
+    },
     inferenceTimeMs: 851,
     anomalyCategory: "interaction_anomaly",
     bullets: ["Gesture timing mismatch", "Unnatural subject-object interaction", "High AI-likelihood score"],
@@ -191,7 +226,11 @@ export function getSimulatedVideoPost(videoId: string | null | undefined): Simul
 }
 
 export function getPredictedModeForVideo(videoId: string | null | undefined): ResultMode {
-  return getSimulatedVideoPost(videoId).predictedMode;
+  return runSimulatedVideoModel(videoId).mode;
+}
+
+export function runSimulatedVideoModel(videoId: string | null | undefined): MlpPrediction {
+  return runMlpInference(getSimulatedVideoPost(videoId).features);
 }
 
 export function getSimulatedResultForVideo(
@@ -199,25 +238,26 @@ export function getSimulatedResultForVideo(
   overrideMode?: ResultMode
 ): DetectorResult {
   const video = getSimulatedVideoPost(videoId);
-  const mode = overrideMode ?? video.predictedMode;
-  const score = overrideMode ? (mode === "authentic" ? 18 : 82) : video.score;
+  const prediction = runMlpInference(video.features);
+  const mode = overrideMode ?? prediction.mode;
+  const score = overrideMode ? (mode === "authentic" ? 18 : 82) : prediction.score;
 
   return {
     mode,
     score,
     likelihoodLabel: "AI-likelihood",
     classification: modeToClassification(mode),
-    bullets: overrideMode && overrideMode !== video.predictedMode ? [`Presentation override: ${modeToClassification(mode)}`] : video.bullets,
+    bullets: overrideMode && overrideMode !== prediction.mode ? [`Presentation override: ${modeToClassification(mode)}`] : video.bullets,
     videoId: video.id,
     videoTitle: video.videoTitle,
     groundTruth: video.groundTruth,
     anomalyCategory: mode === "authentic" ? "none" : video.anomalyCategory,
     inferenceTimeMs: video.inferenceTimeMs,
     frameSampleCount: 8,
-    modelVersion: MODEL_VERSION,
+    modelVersion: prediction.modelVersion,
     nonForensicNotice: NON_FORENSIC_NOTICE,
     details:
-      overrideMode && overrideMode !== video.predictedMode
+      overrideMode && overrideMode !== prediction.mode
         ? {
             summary: "This result was manually overridden for presentation backup.",
             frameConsistency: mode === "authentic" ? "Stable" : "Irregular",
@@ -233,11 +273,13 @@ export function getSimulatedResultForVideo(
 export function calculatePerformanceMetrics(videos: SimulatedVideoPost[] = simulatedVideoPosts): PerformanceMetrics {
   const counts = videos.reduce(
     (accumulator, video) => {
-      if (video.groundTruth === "ai-generated" && video.predictedMode === "ai-generated") {
+      const prediction = runMlpInference(video.features);
+
+      if (video.groundTruth === "ai-generated" && prediction.mode === "ai-generated") {
         accumulator.truePositive += 1;
-      } else if (video.groundTruth === "authentic" && video.predictedMode === "authentic") {
+      } else if (video.groundTruth === "authentic" && prediction.mode === "authentic") {
         accumulator.trueNegative += 1;
-      } else if (video.groundTruth === "authentic" && video.predictedMode === "ai-generated") {
+      } else if (video.groundTruth === "authentic" && prediction.mode === "ai-generated") {
         accumulator.falsePositive += 1;
       } else {
         accumulator.falseNegative += 1;

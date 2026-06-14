@@ -1,17 +1,17 @@
 # Architecture
 
-AgilaEye is moving from a simulated detector prototype to a research-backed
-prototype with a local Python detector sidecar. This document describes the
-current modules, target modules, and the interfaces that should stay stable
-during scaffolding.
+AgileEye is a model-backed simulated detector prototype with a research path
+toward a dataset-trained PyTorch sidecar. This document describes the current
+modules, target modules, and the interfaces that should stay stable during
+scaffolding.
 
 ## MVP Scope Update
 
 ADR-0006 defines the active MVP target: a simulated Facebook-style environment
-with embedded videos, deterministic scan outputs, and SOP metrics computed from
-the embedded evaluation set. The Python sidecar and real ML pipeline described
-below are parked as research-extension architecture, not MVP completion
-requirements.
+with embedded videos, local MLP scan outputs, and SOP metrics computed from the
+embedded evaluation set. The Python sidecar and dataset-trained PyTorch pipeline
+described below are research-extension architecture, not required for the
+current desktop prototype to run.
 
 ## Current Modules
 
@@ -41,11 +41,17 @@ behavior. It manages:
 This state machine should remain the UI authority even after real inference is
 introduced.
 
-### Mock Result Source
+### Local MLP Model
 
-`src/lib/engine/mockResults.ts` currently supplies hardcoded result payloads.
-Future work should replace this through an adapter, not by embedding Python or
-model-specific assumptions in Svelte components.
+`src/lib/engine/mlpModel.ts` is the working detector model for the current
+prototype. It vectorizes deterministic per-video features, runs a shallow MLP,
+applies the `0.50` threshold, and returns a probability-like AI-likelihood
+score plus the strongest anomaly cue.
+
+`src/lib/engine/simulatedVideoLibrary.ts` owns the embedded evaluation set and
+adapts MLP predictions into the existing detector UI result contract. Future
+work should replace this adapter seam, not embed Python or model-specific
+assumptions in Svelte components.
 
 ## Target Modules
 
@@ -76,7 +82,16 @@ frame references or tensors plus quality status.
 
 ### Model Module
 
-The model module trains and evaluates the v1 baseline:
+The current working model module trains and evaluates a pilot MLP over
+ffmpeg-derived video features:
+
+- Eight sampled frames per video.
+- Luminance, color, temporal-delta, and edge-energy features.
+- Standard-library shallow MLP.
+- JSON model artifact under `artifacts/models/`.
+- Test split evaluation under `reports/evaluation/`.
+
+The next PyTorch baseline should train and evaluate:
 
 - Frozen MobileNetV3-Small feature extractor.
 - Temporal average pooling.
@@ -112,11 +127,19 @@ Generated reports belong under `reports/evaluation/`.
 
 ### Python Detector Sidecar
 
-The future sidecar is the local inference adapter between PyTorch and the app.
-The intended command shape is:
+`model/agileeye_detector/` is the first local sidecar scaffold. Its current MLP
+path is executable without PyTorch and mirrors the TypeScript MLP used by the
+desktop app:
 
 ```bash
-python -m agilaeye_detector.infer --video <path> --out <json>
+PYTHONPATH=model python3 -m agileeye_detector.infer --video-id synthetic-city-walk
+```
+
+The future dataset-trained sidecar is the local inference adapter between
+PyTorch and the app. The intended command shape remains:
+
+```bash
+python -m agileeye_detector.infer --video <path> --out <json>
 ```
 
 The sidecar must produce JSON compatible with the detector UI result contract.

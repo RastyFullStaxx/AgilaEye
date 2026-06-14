@@ -1,12 +1,12 @@
 [package]
-name = "hariboneye"
+name = "agileeye"
 version = "0.1.0"
-description = "HaribonEye pilot study prototype"
-authors = ["AgilaEye"]
+description = "AgileEye pilot study prototype"
+authors = ["AgileEye"]
 edition = "2021"
 
 [lib]
-name = "hariboneye_lib"
+name = "agileeye_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

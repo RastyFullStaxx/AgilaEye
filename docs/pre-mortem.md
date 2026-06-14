@@ -1,13 +1,13 @@
 # Pre-Mortem
 
-This pre-mortem names the ways AgilaEye could fail before scaffolding begins.
+This pre-mortem names the ways AgileEye could fail before scaffolding begins.
 Each risk has a concrete mitigation doc or acceptance check.
 
 ## Failure Modes
 
 | Failure mode | Why it matters | Mitigation |
 | --- | --- | --- |
-| Naming drift between AgilaEye and HaribonEye | Future docs, package names, screenshots, and app text become inconsistent. | `CONTEXT.md` and ADR-0001 define AgilaEye as the repo/system and HaribonEye as the current app product name. |
+| Legacy naming drift returns | Future docs, package names, screenshots, and app text become inconsistent. | `CONTEXT.md` and ADR-0001 define AgileEye as the only active product/system name. |
 | Dataset source cannot be downloaded or requires unexpected access | Scaffolding stalls or silently switches to an incompatible dataset. | `docs/dataset-acquisition.md` requires source verification before download and records fallback rules. |
 | Large videos or model files get committed | Repo becomes slow, expensive, or unusable. | `.gitignore`, `docs/dataset-acquisition.md`, and runbooks ban committed data/artifacts by default. |
 | Pilot subset is not reproducible | Reported metrics cannot be recreated. | `docs/data-manifest-schema.md` requires stable IDs, checksums, split, and seed. |
@@ -40,4 +40,3 @@ Before real inference is connected to the UI:
 - A sample sidecar JSON file validates against the documented result contract.
 - The UI still handles scan interruption and active-video changes.
 - The result copy uses first-level screening language.
-

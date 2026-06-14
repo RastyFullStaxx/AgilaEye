@@ -1,6 +1,6 @@
 # Dataset Acquisition
 
-AgilaEye v1 uses a reproducible 100-video pilot subset from the official
+AgileEye v1 uses a reproducible 100-video pilot subset from the official
 GenVideo or GenVideo-100K ecosystem. This keeps the study feasible while still
 aligning with AI-generated video detection research.
 
@@ -27,6 +27,14 @@ Target:
 
 The selected subset must be written to the dataset manifest before preprocessing
 or training.
+
+Current local pilot source:
+
+- Official source ZIP: `data/raw/modelscope/GenVideo-Val.zip`.
+- Extracted pilot: `data/raw/pilot-100/`.
+- Manifest: `data/processed/manifests/pilot-100.csv`.
+- Acquisition script: `scripts/acquire_genvideo_pilot.py`.
+- Selection seed: 42.
 
 ## Storage
 
@@ -70,4 +78,3 @@ Dataset acquisition is complete when:
 - Every row has source path, label, source category, split, checksum, quality
   status, and notes.
 - No data artifacts are staged for commit.
-

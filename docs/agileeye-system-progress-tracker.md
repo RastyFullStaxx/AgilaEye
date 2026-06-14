@@ -1,18 +1,21 @@
-# AgilaEye System Progress Tracker
+# AgileEye System Progress Tracker
 
 Last updated: 2026-06-14
 
-Owner: AgilaEye / HaribonEye implementation team
+Owner: AgileEye implementation team
 
 Purpose: this is the living control document for system readiness. Update it
 whenever a phase item is completed, a blocker is found, a dataset assumption
 changes, a model run is produced, a release is pushed, or an implementation
 decision changes.
 
-Current MVP scope: complete AgilaEye as a simulated Facebook-style environment
+Current MVP scope: complete AgileEye as a simulated Facebook-style environment
 with embedded videos, repeated scan flow, deterministic per-video scan outputs,
-and SOP performance metrics. Dataset download, Python training, real inference,
-and sidecar packaging are research-extension work, not MVP blockers.
+local MLP scoring, and SOP performance metrics. The planned 100-video pilot
+dataset has now been downloaded and partitioned, and a dataset-backed pilot MLP
+pipeline can preprocess, train, evaluate, and run sidecar inference. The heavier
+PyTorch/MobileNetV3 baseline, Grad-CAM, Tauri sidecar invocation, and packaging
+remain research-extension work, not MVP blockers.
 
 ## How To Update This Tracker
 
@@ -30,7 +33,7 @@ Update rules:
 - Keep percentages conservative. A feature is not research-ready until it is
   reproducible, documented, tested, and tied to a manifest, model artifact, or
   report.
-- Separate "front-end simulation works" from "real detector works."
+- Separate "front-end simulation works" from "dataset-trained detector works."
 - Separate "dataset source documented" from "dataset downloaded and validated."
 - Do not mark model work complete until the exact manifest, split, seed,
   threshold, model version, hardware, and metrics are recorded.
@@ -46,24 +49,27 @@ Update rules:
 
 Current overall assessment for the simulated embedded-video MVP:
 
-- Overall MVP completion: 78%
-- Local simulated app/demo readiness: 94%
-- Embedded video feed readiness: 85%
-- Deterministic scan-result readiness: 90%
+- Overall MVP completion: 94%
+- Local simulated app/demo readiness: 96%
+- Embedded video feed readiness: 90%
+- Local MLP model readiness: 96%
+- Deterministic scan-result readiness: 95%
 - SOP metrics readiness: 92%
-- Documentation alignment with MVP scope: 70%
+- Documentation alignment with MVP scope: 90%
+- Dataset-backed pilot MLP readiness: 70%
 - Public/production detector readiness: not planned for MVP
 
-Plain answer to "is AgilaEye ready for the intended simulated Facebook-style
+Plain answer to "is AgileEye ready for the intended simulated Facebook-style
 demo?":
 
-The repo is close. The current HaribonEye app has a working detector overlay,
-state machine, embedded-video feed, deterministic scan outputs, SOP metric math,
-and a visible metrics panel. The remaining MVP work is to finish copy/doc
-alignment, strengthen tests around the new UI pieces, run the full CI gate, and
-optionally start the dev server for a visual smoke check. It is intentionally
-not a real AI-generated video detector and should not be judged against dataset
-download, PyTorch training, or production inference requirements.
+The repo is close. The current AgileEye app has a working detector overlay,
+state machine, embedded-video feed, local MLP scan outputs, SOP metric math, and
+a visible metrics panel. The repo now also has a working 100-video pilot MLP
+pipeline that preprocesses local videos, trains a shallow model, evaluates the
+held-out test split, and emits sidecar-compatible inference JSON. The remaining
+research work is the heavier PyTorch/MobileNetV3 baseline, Grad-CAM, Tauri
+sidecar invocation, and packaging. It is intentionally not a production
+AI-generated video detector.
 
 ## Evidence Consulted
 
@@ -109,6 +115,8 @@ Repository and docs reviewed:
 - `src-tauri/src/lib.rs`
 - `scripts/run-vitest.mjs`
 - `scripts/clean-vite-cache.mjs`
+- `scripts/acquire_genvideo_pilot.py`
+- `model/agileeye_detector/**`
 
 Verification highlights through 2026-06-14:
 
@@ -117,8 +125,8 @@ Verification highlights through 2026-06-14:
 - `[x]` `npm run ci` passed after the documentation foundation pass:
   `svelte-check` clean, 15 Vitest tests passed, and Vite production build
   completed.
-- `[x]` `npm run ci` passed after the embedded-video simulation pass:
-  `svelte-check` clean, 20 Vitest tests passed, and Vite production build
+- `[x]` `npm run ci` passed after the embedded-video and MLP model pass:
+  `svelte-check` clean, 23 Vitest tests passed, and Vite production build
   completed.
 - `[x]` Local Vite dev server on `http://127.0.0.1:1420/` returned `200 OK`
   after the embedded-video simulation pass.
@@ -128,8 +136,23 @@ Verification highlights through 2026-06-14:
 - `[x]` Internal markdown path sanity check found no missing documented internal
   paths.
 - `[x]` Data/model/report artifact guardrails were added to `.gitignore`.
-- `[!]` `npm ci` reported existing audit findings: 5 moderate, 1 high, and 1
-  critical. No dependency upgrades were applied during the docs pass.
+- `[x]` Dependency audit is clean after upgrading the Vite/Vitest/Svelte Vite
+  plugin stack: `npm install` reported `found 0 vulnerabilities`.
+- `[x]` Official GenVideo validation ZIP downloaded under ignored storage:
+  `data/raw/modelscope/GenVideo-Val.zip`.
+- `[x]` Pilot manifest generated at `data/processed/manifests/pilot-100.csv`
+  with 100 rows, 50 authentic videos, 50 AI-generated videos, and 70/10/20
+  train/validation/test split.
+- `[x]` `@ffprobe-installer/ffprobe` added as a dev dependency so the manifest
+  includes duration, resolution, and fps without requiring a system ffmpeg
+  install.
+- `[x]` `@ffmpeg-installer/ffmpeg` added as a dev dependency so preprocessing
+  can sample frames without requiring a system ffmpeg install.
+- `[x]` `npm run ml:pipeline` completed: manifest validation, preprocessing,
+  MLP training, and held-out test evaluation.
+- `[x]` `npm run ml:infer:sample` emitted sidecar-compatible JSON from the
+  trained pilot MLP artifact.
+- `[x]` `npm run py:test` passed with 3 Python tests.
 - `[!]` `AGENTS.md` is ignored by `.gitignore`; local future-agent guidance was
   updated but will not appear in normal `git status` unless the ignore policy is
   changed.
@@ -139,22 +162,28 @@ Current inventory:
 - 1 Tauri v2 desktop shell.
 - 1 Svelte/Vite app entrypoint.
 - 26 TypeScript/Svelte source files under `src`.
-- 3 test files.
-- 15 passing tests.
-- 2 helper scripts under `scripts`.
+- 5 test files.
+- 23 passing tests.
+- 3 helper scripts under `scripts`.
 - 21 markdown docs under `docs`.
 - 5 ADRs.
 - 3 runbooks.
 - 1 source DOCX research plan.
-- 0 Python dataset scripts.
-- 0 Python model scripts.
-- 0 dataset manifests.
+- 3 Python dataset/preprocessing modules.
+- 5 Python model/evaluation/inference modules.
+- 1 generated pilot dataset manifest.
 - 0 downloaded dataset videos.
-- 0 processed frame outputs.
-- 0 trained model artifacts.
+- 1 generated compact feature manifest.
+- 1 generated pilot MLP model artifact.
 - 0 generated Grad-CAM outputs.
-- 0 evaluation reports.
+- 1 generated evaluation report directory.
+- 1 downloaded official GenVideo validation ZIP under ignored local storage.
+- 100 extracted pilot videos under ignored local storage.
+- 1 generated pilot manifest under ignored local storage.
 - 1 embedded-video simulation library.
+- 1 local MLP model module.
+- 1 Python sidecar MLP scaffold.
+- 1 dataset-backed Python pilot MLP pipeline.
 - 1 SOP metrics panel.
 
 ## Current Functional Map
@@ -162,7 +191,7 @@ Current inventory:
 ### Functioning Now For Demo
 
 - `[x]` Local Svelte/Vite app builds and runs.
-- `[x]` Tauri v2 shell is configured with the HaribonEye product name.
+- `[x]` Tauri v2 shell is configured with the AgileEye product name.
 - `[x]` Facebook-style mock browsing environment exists.
 - `[x]` Detector overlay has idle, scanning, result, details, rescan, and demo
   control surfaces.
@@ -178,47 +207,65 @@ Current inventory:
 - `[x]` Pre-mortem guardrails identify the main ways the project can fail before
   scaffolding.
 - `[x]` Embedded video catalog exists for the simulated Facebook-style feed.
-- `[x]` SOP metrics are computed from deterministic ground-truth and predicted
-  labels in code.
+- `[x]` Local MLP classifier exists for embedded-video feature vectors.
+- `[x]` Python sidecar scaffold exists and emits contract-compatible JSON from
+  the embedded feature catalog.
+- `[x]` Official GenVideo validation ZIP is downloaded locally.
+- `[x]` 100-video pilot subset is extracted and partitioned with seed 42.
+- `[x]` Pilot manifest has balanced labels, stratified splits, checksums,
+  duration, resolution, fps, quality status, and source notes.
+- `[x]` `npm run data:validate` validates the pilot manifest.
+- `[x]` `npm run ml:preprocess` extracts compact video features from all 100
+  pilot videos.
+- `[x]` `npm run ml:train` writes `artifacts/models/agileeye-pilot-mlp-v1.json`.
+- `[x]` `npm run ml:evaluate` writes metrics, predictions, and summary reports
+  for the held-out 20-video test split.
+- `[x]` `npm run ml:infer:sample` runs trained-model sidecar inference against a
+  local video and emits the documented result contract.
+- `[x]` SOP metrics are computed from deterministic ground-truth labels and MLP
+  predictions in code.
 - `[x]` The right sidebar displays accuracy, precision, recall, F1-score,
   average inference time, and confusion counts.
 
 ### Partially Functioning
 
-- `[~]` Project identity: AgilaEye/HaribonEye naming is now documented, but some
-  existing UI/app metadata still says HaribonEye while repo/package paths say
-  AgilaEye.
+- `[x]` Project identity: visible product, docs, package metadata, and Tauri
+  metadata now use AgileEye consistently.
 - `[~]` Data hygiene: `.gitignore` protects future generated paths, but no
   validator or pre-commit check exists yet to prevent accidental large files.
-- `[~]` Result contract: the future sidecar JSON shape is documented, but no
-  TypeScript adapter or fixture file exists yet.
-- `[~]` Evaluation design: metrics and report shape are documented, but no
-  evaluation command exists.
-- `[~]` Runbooks: dataset, training, and evaluation runbooks exist, but they are
-  not executable yet.
-- `[~]` Documentation alignment: ADR-0006 and context now define the simulated
-  MVP scope, but older research-extension docs still describe the parked Python
-  track.
+- `[~]` Result contract: the sidecar can emit the documented JSON shape from
+  embedded features and from the trained pilot MLP, but no Tauri invocation
+  adapter or fixture-driven UI test exists yet.
+- `[x]` Evaluation design: `npm run ml:evaluate` writes metrics, predictions,
+  and summary report outputs.
+- `[x]` Runbooks: dataset, training, and evaluation runbooks include executable
+  current commands.
+- `[~]` Documentation alignment: ADR-0006 and context now define the MLP-backed
+  simulated MVP scope, while research-extension docs still describe the parked
+  Python/PyTorch track.
 
-### Not Functioning Yet For The Real Detector
+### Not Functioning Yet For The Dataset-Trained Detector
 
-- `[ ]` Python project/package scaffold.
-- `[ ]` Dataset download/import command.
-- `[ ]` Dry-run dataset source validator.
-- `[ ]` GenVideo or GenVideo-100K local data acquisition.
-- `[ ]` 100-video pilot subset manifest.
-- `[ ]` Video-level stratified split implementation.
-- `[ ]` Video probing, checksum generation, and quality status validation.
-- `[ ]` Frame sampling and preprocessing.
+- `[x]` Python project/package scaffold.
+- `[x]` Dataset download/import command.
+- `[~]` Dry-run dataset source validator; source URL and no-smudge ModelScope
+  Git listing were verified manually, but no standalone dry-run command exists.
+- `[x]` GenVideo local data acquisition.
+- `[x]` 100-video pilot subset manifest.
+- `[x]` Video-level stratified split implementation.
+- `[x]` Video probing, checksum generation, and quality status validation.
+- `[x]` Frame sampling and preprocessing for the pilot MLP feature baseline.
 - `[ ]` PyTorch MobileNetV3-Small feature extraction.
-- `[ ]` Temporal average pooling implementation.
-- `[ ]` Shallow MLP classifier.
-- `[ ]` Training command.
-- `[ ]` Model artifact metadata.
+- `[ ]` Temporal average pooling for MobileNetV3 frame embeddings.
+- `[x]` Shallow MLP classifier for deterministic feature vectors.
+- `[x]` Training command for the pilot MLP.
+- `[x]` Model artifact metadata for the pilot MLP.
 - `[ ]` Grad-CAM generation.
 - `[ ]` Template-based explanation output implementation.
-- `[ ]` Evaluation command and report generation.
-- `[ ]` Python sidecar inference command.
+- `[x]` Evaluation command and report generation for the pilot MLP.
+- `[~]` Python sidecar inference command supports embedded feature vectors and
+  trained pilot MLP video inference; PyTorch/MobileNetV3 video inference is not
+  implemented.
 - `[ ]` Tauri command invocation for the sidecar.
 - `[ ]` Svelte adapter from sidecar JSON to `DetectorResult`.
 - `[ ]` Error handling for sidecar missing, invalid JSON, timeout, missing model,
@@ -233,13 +280,15 @@ Current inventory:
 | Local app shell | 92% | Svelte/Tauri app builds, tests pass, and demo UI works. | Need packaging review and dependency audit cleanup before wider distribution. |
 | Detector interaction model | 90% | State machine models active video, scan, interruption, result, and rescan. | Needs real sidecar timing/error states without breaking current behavior. |
 | Mock result UI | 88% | Authentic and AI-generated result panels and details exist. | Needs adapter from sidecar JSON and non-forensic copy review with real outputs. |
-| Dataset acquisition | 8% | Official sources, storage policy, runbook, and manifest requirements documented. | No downloader/importer, source validation, manifest, or local dataset yet. |
-| Data manifest | 12% | Required CSV schema and validation rules documented. | No manifest generator or validator exists. |
-| Preprocessing | 0% | Eight-frame/224x224/MobileNetV3 defaults documented. | No Python video reader, sampler, quality checks, or processed outputs. |
-| Baseline model | 0% | PyTorch MobileNetV3-Small baseline selected by ADR. | No Python package, model code, training loop, artifacts, or metrics. |
+| Dataset acquisition | 90% | Official GenVideo validation ZIP is downloaded; 100 selected pilot videos are extracted under ignored storage. | Need checksum of the source ZIP recorded in a report and terms/access notes finalized before sharing. |
+| Data manifest | 92% | `pilot-100.csv` has 100 balanced rows, stratified splits, checksums, duration, resolution, fps, quality status, and source notes; `npm run data:validate` passes. | Need possibly curated tiny sample fixtures. |
+| Preprocessing | 65% | `npm run ml:preprocess` samples all pilot videos through ffmpeg and writes compact feature rows. | MobileNetV3 tensor/frame artifact path is not implemented. |
+| Local MLP model | 98% | TypeScript MLP module scores embedded-video feature vectors and feeds metrics. | Still demo-focused, not the dataset-backed model used for reports. |
+| Dataset-backed pilot MLP | 70% | `npm run ml:pipeline` trains a standard-library MLP and writes model/evaluation artifacts. | Feature set is lightweight; needs stronger model and validation before claims. |
+| Dataset-trained MobileNetV3 baseline model | 0% | PyTorch MobileNetV3-Small baseline selected by ADR. | No PyTorch dependency, feature extractor, temporal pooling, or Grad-CAM implementation. |
 | Explainability | 0% | Grad-CAM and template mapping documented. | No heatmap generator, frame selection, or explanation output implementation. |
-| Evaluation/reporting | 4% | Metrics and report shape documented. | No evaluation command, predictions CSV, metrics JSON, or summary report. |
-| Python sidecar | 0% | Command and JSON contract documented. | No sidecar module, timeout handling, or fixture outputs. |
+| Evaluation/reporting | 70% | `npm run ml:evaluate` writes metrics JSON, predictions CSV, and summary markdown for the pilot MLP test split. | Needs report curation, source ZIP checksum, and stronger model baseline comparisons. |
+| Python sidecar | 55% | `agileeye_detector.infer` emits contract-compatible JSON for embedded feature vectors and trained pilot MLP video inference. | No Tauri invocation, timeout handling, PyTorch model loading, or fixture-driven UI tests. |
 | UI real-detector integration | 0% | Adapter seam and state-machine preservation rules documented. | No Tauri invocation, adapter, feature flag, or sidecar error UI. |
 | Packaging/release | 5% | Tauri shell exists and packaging concerns are identified. | Python runtime, model artifact, setup, and clean-machine workflow are unresolved. |
 
@@ -448,7 +497,7 @@ Goal: expose local inference through the documented JSON contract.
 
 Planned work:
 
-- `[ ]` Add `agilaeye_detector.infer` module.
+- `[ ]` Add `agileeye_detector.infer` module.
 - `[ ]` Implement `--video <path> --out <json>` command.
 - `[ ]` Load model artifact and preprocessing config.
 - `[ ]` Run one-video preprocessing and inference.
@@ -517,13 +566,14 @@ Acceptance:
 
 ## Critical Cross-Cutting Blockers
 
-- `[!]` No real dataset has been downloaded or validated.
-- `[!]` No Python scaffold exists yet.
-- `[!]` No real model exists yet.
-- `[!]` No manifest exists yet, so no reproducible experiment can run.
-- `[!]` No sidecar exists, so the app cannot perform real inference.
+- `[x]` Real pilot dataset has been downloaded, partitioned, and validated.
+- `[x]` Python scaffold exists.
+- `[x]` Pilot MLP model exists and trains from dataset-derived features.
+- `[x]` Pilot manifest exists, so reproducible pilot experiments can run.
+- `[~]` Sidecar exists for embedded features and trained pilot MLP inference,
+  but it is not invoked by Tauri yet.
 - `[!]` Packaging Python with Tauri is unresolved.
-- `[!]` Existing npm audit findings need review before public release.
+- `[x]` npm audit is clean after dependency updates.
 - `[!]` `AGENTS.md` is ignored, so local agent guidance may not travel with the
   repo unless intentionally tracked.
 
@@ -538,27 +588,28 @@ Acceptance:
 
 ### Dataset Scaffold Sprint
 
-1. Create Python project layout.
-2. Add dataset manifest generator and validator.
-3. Add official source dry-run.
-4. Add fixed-seed pilot selector.
-5. Produce the first validated 100-row manifest.
+1. `[x]` Create Python project layout.
+2. `[x]` Add dataset manifest generator and validator.
+3. `[~]` Add official source dry-run.
+4. `[x]` Add fixed-seed pilot selector.
+5. `[x]` Produce the first validated 100-row manifest.
 
 ### Preprocessing And Model Sprint
 
-1. Add video probe and frame sampler.
-2. Add processed manifest output.
-3. Add MobileNetV3-Small feature extraction.
-4. Add temporal pooling and shallow MLP training.
-5. Produce first local model artifact.
+1. `[x]` Add video probe and frame sampler for pilot MLP features.
+2. `[x]` Add processed feature manifest output.
+3. `[ ]` Add MobileNetV3-Small feature extraction.
+4. `[~]` Add shallow MLP training; temporal pooling remains for MobileNetV3
+   embeddings.
+5. `[x]` Produce first local model artifact.
 
 ### Evaluation And Explanation Sprint
 
-1. Add evaluation command.
-2. Produce metrics JSON, predictions CSV, and summary report.
-3. Add Grad-CAM for representative frames.
-4. Add template explanation output.
-5. Produce sidecar-compatible inference JSON.
+1. `[x]` Add evaluation command.
+2. `[x]` Produce metrics JSON, predictions CSV, and summary report.
+3. `[ ]` Add Grad-CAM for representative frames.
+4. `[ ]` Add template explanation output for generated heatmaps.
+5. `[x]` Produce sidecar-compatible inference JSON.
 
 ### UI Integration Sprint
 
@@ -579,7 +630,7 @@ Acceptance:
 
 ## Update Log
 
-- 2026-06-14: Created documentation foundation for AgilaEye, including context,
+- 2026-06-14: Created documentation foundation for AgileEye, including context,
   source-plan summary, pre-mortem, architecture, roadmap, dataset/ML/UI/ethics
   docs, runbooks, ADRs, references, and data/artifact ignore rules.
 - 2026-06-14: Refreshed dependencies with `npm ci` after Rollup optional native
@@ -587,9 +638,19 @@ Acceptance:
 - 2026-06-14: Verified `npm run ci`: Svelte diagnostics passed, 15 tests passed,
   and Vite production build passed.
 - 2026-06-14: Added this system progress tracker as the living control document
-  for AgilaEye readiness.
+  for AgileEye readiness.
 - 2026-06-14: Updated MVP scope to simulated embedded-video scanning, added
   deterministic per-video scan outputs, computed SOP metrics, and parked
   dataset/Python sidecar work as a research extension.
+- 2026-06-14: Added a local MLP model layer behind the simulated scanner so
+  embedded-video results and SOP metrics are model-derived instead of static
+  label lookups.
 - 2026-06-14: Verified embedded-video simulation pass with `npm run ci` and a
   local `200 OK` response from `http://127.0.0.1:1420/`.
+- 2026-06-14: Downloaded official GenVideo validation ZIP, extracted a seeded
+  100-video pilot subset, generated the manifest, and validated 50/50 labels
+  with 70/10/20 splits.
+- 2026-06-14: Added ffmpeg-backed preprocessing, a standard-library trainable
+  pilot MLP, evaluation report generation, and trained-model sidecar inference.
+- 2026-06-14: Verified `npm run ml:pipeline`, `npm run ml:infer:sample`, and
+  `npm run py:test`.

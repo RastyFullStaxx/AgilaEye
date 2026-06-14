@@ -1,13 +1,13 @@
 # Scaffolding Roadmap
 
-This roadmap moves AgilaEye from a polished simulation to a documented,
+This roadmap moves AgileEye from a polished simulation to a documented,
 reproducible research prototype.
 
 ## Current MVP Scope Update
 
 ADR-0006 supersedes the dataset/Python sidecar track for MVP completion. The
 active completion target is now a simulated Facebook-style feed with embedded
-videos, deterministic scan outputs, and SOP metrics computed from the embedded
+videos, local MLP scan outputs, and SOP metrics computed from the embedded
 evaluation set. Dataset download, PyTorch training, Grad-CAM file generation,
 and Python sidecar integration are parked as research-extension work.
 
@@ -118,7 +118,7 @@ Deliverables:
 - Local inference command:
 
 ```bash
-python -m agilaeye_detector.infer --video <path> --out <json>
+python -m agileeye_detector.infer --video <path> --out <json>
 ```
 
 - JSON result contract.
