@@ -69,6 +69,8 @@ Rust/Cargo is required for Tauri commands.
 
 - `CONTEXT.md` - domain vocabulary, naming policy, goals, constraints, and
   non-goals.
+- `docs/agilaeye-system-progress-tracker.md` - living readiness tracker,
+  phase checklist, blockers, and update log.
 - `docs/source-plan-summary.md` - implementation-friendly summary of
   `docs/AgileEye.docx`.
 - `docs/pre-mortem.md` - failure modes and guardrails before scaffolding.
