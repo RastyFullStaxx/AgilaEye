@@ -62,7 +62,7 @@ describe("detectorMachine", () => {
     vi.advanceTimersByTime(3000);
     expect(snapshot().state).toBe("RESULT_AUTHENTIC");
     expect(snapshot().result).toMatchObject({
-      score: 0,
+      score: 1,
       likelihoodLabel: "AI-likelihood",
       classification: "Likely Authentic"
     });
@@ -154,16 +154,16 @@ describe("detectorMachine", () => {
     const { controller, snapshot } = createController();
 
     controller.dispatch("APP_READY");
-    controller.updateVisibility("agileeye_0091", 0.8);
+    controller.updateVisibility("agileeye_0092", 0.8);
     vi.advanceTimersByTime(4500);
 
     expect(snapshot().state).toBe("RESULT_AI_GENERATED");
-    expect(snapshot().activeVideoId).toBe("agileeye_0091");
+    expect(snapshot().activeVideoId).toBe("agileeye_0092");
     expect(snapshot().result).toMatchObject({
-      videoId: "agileeye_0091",
-      score: 100,
+      videoId: "agileeye_0092",
+      score: 67,
       classification: "Likely AI-Generated",
-      anomalyCategory: "interaction_anomaly"
+      anomalyCategory: "movement_anomaly"
     });
 
     controller.destroy();

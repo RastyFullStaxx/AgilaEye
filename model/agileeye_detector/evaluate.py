@@ -9,6 +9,7 @@ import platform
 import time
 from pathlib import Path
 
+from .knn import load_knn_model, predict_knn_probability
 from .pilot_mlp import load_model, predict_probability
 from .video_features import FEATURE_NAMES
 
@@ -45,7 +46,13 @@ def row_matches_split(row_split: str, requested_split: str) -> bool:
 
 
 def evaluate(features_path: str | Path, model_path: str | Path, out_dir: str | Path, split: str = "test") -> None:
-    model = load_model(model_path)
+    model_payload = json.loads(Path(model_path).read_text(encoding="utf-8"))
+    if "references" in model_payload:
+        model = load_knn_model(model_path)
+        probability_fn = predict_knn_probability
+    else:
+        model = load_model(model_path)
+        probability_fn = predict_probability
     report_dir = Path(out_dir)
     report_dir.mkdir(parents=True, exist_ok=True)
     prediction_rows: list[dict[str, object]] = []
@@ -56,7 +63,7 @@ def evaluate(features_path: str | Path, model_path: str | Path, out_dir: str | P
                 continue
             values = [float(row[name]) for name in FEATURE_NAMES]
             start = time.perf_counter()
-            probability = predict_probability(model, values)
+            probability = probability_fn(model, values)
             elapsed_ms = (time.perf_counter() - start) * 1000.0
             predicted_label = "ai_generated" if probability >= model.threshold else "authentic"
             prediction_rows.append(

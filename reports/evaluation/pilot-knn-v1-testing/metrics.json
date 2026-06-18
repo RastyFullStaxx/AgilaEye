@@ -1,0 +1,20 @@
+{
+  "run_id": "pilot-knn-v1-testing",
+  "model_version": "AgileEye-Pilot-KNN-v1",
+  "model_artifact": "artifacts/models/agileeye-pilot-knn-v1.json",
+  "features": "data/processed/manifests/pilot-100.features.csv",
+  "threshold": 0.5,
+  "split": "testing",
+  "video_count": 20,
+  "test_video_count": 20,
+  "average_inference_time_ms": 0.16426309998678335,
+  "hardware": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "accuracy": 0.7,
+  "precision": 0.6666666666666666,
+  "recall": 0.8,
+  "f1_score": 0.7272727272727272,
+  "true_positive": 8,
+  "true_negative": 6,
+  "false_positive": 4,
+  "false_negative": 2
+}

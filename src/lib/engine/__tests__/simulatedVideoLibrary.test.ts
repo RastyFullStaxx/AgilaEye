@@ -34,32 +34,32 @@ describe("simulatedVideoLibrary", () => {
   it("computes SOP performance metrics from all embedded video predictions", () => {
     expect(sopPerformanceMetrics).toMatchObject({
       sampleSize: 100,
-      truePositive: 46,
-      trueNegative: 45,
-      falsePositive: 5,
-      falseNegative: 4
+      truePositive: 49,
+      trueNegative: 40,
+      falsePositive: 10,
+      falseNegative: 1
     });
-    expect(formatMetricPercent(sopPerformanceMetrics.accuracy)).toBe("91%");
-    expect(formatMetricPercent(sopPerformanceMetrics.precision)).toBe("90.2%");
-    expect(formatMetricPercent(sopPerformanceMetrics.recall)).toBe("92%");
-    expect(formatMetricPercent(sopPerformanceMetrics.f1Score)).toBe("91.1%");
+    expect(formatMetricPercent(sopPerformanceMetrics.accuracy)).toBe("89%");
+    expect(formatMetricPercent(sopPerformanceMetrics.precision)).toBe("83.1%");
+    expect(formatMetricPercent(sopPerformanceMetrics.recall)).toBe("98%");
+    expect(formatMetricPercent(sopPerformanceMetrics.f1Score)).toBe("89.9%");
   });
 
   it("computes model development and model testing metrics for SOP tables", () => {
     expect(splitPerformanceMetrics.modelDevelopment).toMatchObject({
       sampleSize: 80,
-      accuracy: 0.9625,
-      precision: 0.9512195121951219,
-      recall: 0.975,
-      f1Score: 0.9629629629629629
+      accuracy: 0.9125,
+      precision: 0.851063829787234,
+      recall: 1,
+      f1Score: 0.9195402298850576
     });
 
     expect(splitPerformanceMetrics.modelTesting).toMatchObject({
       sampleSize: 20,
-      accuracy: 0.7,
-      precision: 0.7,
-      recall: 0.7,
-      f1Score: 0.7
+      accuracy: 0.8,
+      precision: 0.75,
+      recall: 0.9,
+      f1Score: 0.8181818181818182
     });
   });
 
@@ -79,19 +79,19 @@ describe("simulatedVideoLibrary", () => {
   });
 
   it("returns deterministic scan results for the active embedded video", () => {
-    expect(getPredictedModeForVideo("agileeye_0091")).toBe("ai-generated");
+    expect(getPredictedModeForVideo("agileeye_0092")).toBe("ai-generated");
 
-    const result = getSimulatedResultForVideo("agileeye_0091");
+    const result = getSimulatedResultForVideo("agileeye_0092");
 
     expect(result).toMatchObject({
       mode: "ai-generated",
-      score: 100,
-      videoId: "agileeye_0091",
-      videoTitle: "AgileEye 0091",
+      score: 67,
+      videoId: "agileeye_0092",
+      videoTitle: "AgileEye 0092",
       groundTruth: "ai-generated",
-      anomalyCategory: "interaction_anomaly",
+      anomalyCategory: "movement_anomaly",
       frameSampleCount: 8,
-      modelVersion: "AgileEye-Pilot-MLP-v1"
+      modelVersion: "AgileEye-Pilot-MLP-v2"
     });
   });
 });

@@ -1,6 +1,7 @@
 import unittest
 
 from agileeye_detector.mlp import run_mlp_inference
+from agileeye_detector.knn import KnnModel, load_knn_model, predict_knn_probability, save_knn_model
 from agileeye_detector.pilot_mlp import predict_probability, train_mlp, with_threshold
 
 
@@ -73,6 +74,48 @@ class MlpModelTest(unittest.TestCase):
         self.assertEqual(tuned.threshold, 0.42)
         self.assertEqual(tuned.model_version, "pilot-test-tuned")
         self.assertEqual(tuned.hidden_weights, model.hidden_weights)
+
+    def test_knn_probability_follows_nearest_labeled_neighbors(self):
+        model = KnnModel(
+            feature_names=["a", "b"],
+            references=[
+                ([0.0, 0.0], 0),
+                ([0.1, 0.0], 0),
+                ([1.0, 1.0], 1),
+                ([0.9, 1.0], 1),
+            ],
+            means=[0.5, 0.5],
+            stds=[0.5, 0.5],
+            k=3,
+            distance_power=2.0,
+            feature_weights=[1.0, 1.0],
+            threshold=0.5,
+            model_version="knn-test",
+        )
+
+        self.assertLess(predict_knn_probability(model, [0.05, 0.0]), 0.5)
+        self.assertGreaterEqual(predict_knn_probability(model, [0.95, 1.0]), 0.5)
+
+    def test_knn_model_round_trips_to_json(self):
+        model = KnnModel(
+            feature_names=["a"],
+            references=[([0.0], 0), ([1.0], 1)],
+            means=[0.5],
+            stds=[0.5],
+            k=1,
+            distance_power=1.0,
+            feature_weights=[1.0],
+            threshold=0.4,
+            model_version="knn-roundtrip",
+        )
+        path = "/tmp/agileeye-knn-roundtrip.json"
+
+        save_knn_model(model, path, {"test": True})
+        loaded = load_knn_model(path)
+
+        self.assertEqual(loaded.model_version, "knn-roundtrip")
+        self.assertEqual(loaded.threshold, 0.4)
+        self.assertGreaterEqual(predict_knn_probability(loaded, [1.0]), 0.4)
 
 
 if __name__ == "__main__":
