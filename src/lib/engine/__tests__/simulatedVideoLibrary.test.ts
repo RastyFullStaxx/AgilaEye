@@ -2,32 +2,65 @@ import { describe, expect, it } from "vitest";
 import {
   calculatePerformanceMetrics,
   formatMetricPercent,
+  perVideoPerformanceRows,
   getPredictedModeForVideo,
   getSimulatedResultForVideo,
+  splitPerformanceMetrics,
   simulatedVideoPosts,
   sopPerformanceMetrics
 } from "../simulatedVideoLibrary";
 
 describe("simulatedVideoLibrary", () => {
-  it("keeps the embedded SOP demo set balanced enough for the pilot scan loop", () => {
-    expect(simulatedVideoPosts).toHaveLength(6);
-    expect(simulatedVideoPosts.filter((video) => video.groundTruth === "authentic")).toHaveLength(3);
-    expect(simulatedVideoPosts.filter((video) => video.groundTruth === "ai-generated")).toHaveLength(3);
+  it("embeds the full 100-video pilot set in the scroll simulation", () => {
+    expect(simulatedVideoPosts).toHaveLength(100);
+    expect(simulatedVideoPosts.filter((video) => video.groundTruth === "authentic")).toHaveLength(50);
+    expect(simulatedVideoPosts.filter((video) => video.groundTruth === "ai-generated")).toHaveLength(50);
+    expect(simulatedVideoPosts.filter((video) => video.split !== "test")).toHaveLength(80);
+    expect(simulatedVideoPosts.filter((video) => video.split === "test")).toHaveLength(20);
+    expect(simulatedVideoPosts.every((video) => video.videoSrc.startsWith("/videos/pilot-100/"))).toBe(true);
   });
 
-  it("computes SOP performance metrics from the embedded video predictions", () => {
-    expect(sopPerformanceMetrics).toMatchObject({
-      sampleSize: 6,
-      truePositive: 3,
-      trueNegative: 2,
-      falsePositive: 1,
-      falseNegative: 0
+  it("logs one performance row per pilot video", () => {
+    expect(perVideoPerformanceRows).toHaveLength(100);
+    expect(perVideoPerformanceRows[0]).toMatchObject({
+      videoId: "agileeye_0001",
+      split: "train",
+      trueLabel: "authentic",
+      predictedLabel: "authentic"
     });
-    expect(formatMetricPercent(sopPerformanceMetrics.accuracy)).toBe("83.3%");
-    expect(formatMetricPercent(sopPerformanceMetrics.precision)).toBe("75%");
-    expect(formatMetricPercent(sopPerformanceMetrics.recall)).toBe("100%");
-    expect(formatMetricPercent(sopPerformanceMetrics.f1Score)).toBe("85.7%");
-    expect(Math.round(sopPerformanceMetrics.averageInferenceTimeMs)).toBe(779);
+    expect(perVideoPerformanceRows.every((row) => row.inferenceTimeMs >= 0)).toBe(true);
+  });
+
+  it("computes SOP performance metrics from all embedded video predictions", () => {
+    expect(sopPerformanceMetrics).toMatchObject({
+      sampleSize: 100,
+      truePositive: 46,
+      trueNegative: 45,
+      falsePositive: 5,
+      falseNegative: 4
+    });
+    expect(formatMetricPercent(sopPerformanceMetrics.accuracy)).toBe("91%");
+    expect(formatMetricPercent(sopPerformanceMetrics.precision)).toBe("90.2%");
+    expect(formatMetricPercent(sopPerformanceMetrics.recall)).toBe("92%");
+    expect(formatMetricPercent(sopPerformanceMetrics.f1Score)).toBe("91.1%");
+  });
+
+  it("computes model development and model testing metrics for SOP tables", () => {
+    expect(splitPerformanceMetrics.modelDevelopment).toMatchObject({
+      sampleSize: 80,
+      accuracy: 0.9625,
+      precision: 0.9512195121951219,
+      recall: 0.975,
+      f1Score: 0.9629629629629629
+    });
+
+    expect(splitPerformanceMetrics.modelTesting).toMatchObject({
+      sampleSize: 20,
+      accuracy: 0.7,
+      precision: 0.7,
+      recall: 0.7,
+      f1Score: 0.7
+    });
   });
 
   it("handles empty metric inputs without dividing by zero", () => {
@@ -46,20 +79,19 @@ describe("simulatedVideoLibrary", () => {
   });
 
   it("returns deterministic scan results for the active embedded video", () => {
-    expect(getPredictedModeForVideo("synthetic-city-walk")).toBe("ai-generated");
+    expect(getPredictedModeForVideo("agileeye_0091")).toBe("ai-generated");
 
-    const result = getSimulatedResultForVideo("synthetic-city-walk");
+    const result = getSimulatedResultForVideo("agileeye_0091");
 
     expect(result).toMatchObject({
       mode: "ai-generated",
-      score: 86,
-      videoId: "synthetic-city-walk",
-      videoTitle: "Generated city walk",
+      score: 100,
+      videoId: "agileeye_0091",
+      videoTitle: "AgileEye 0091",
       groundTruth: "ai-generated",
-      anomalyCategory: "texture_jitter",
+      anomalyCategory: "interaction_anomaly",
       frameSampleCount: 8,
-      inferenceTimeMs: 804,
-      modelVersion: "AgileEye-MLP-Sim-v1"
+      modelVersion: "AgileEye-Pilot-MLP-v1"
     });
   });
 });

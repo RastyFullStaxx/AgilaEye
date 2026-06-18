@@ -1,7 +1,7 @@
 import unittest
 
 from agileeye_detector.mlp import run_mlp_inference
-from agileeye_detector.pilot_mlp import predict_probability, train_mlp
+from agileeye_detector.pilot_mlp import predict_probability, train_mlp, with_threshold
 
 
 class MlpModelTest(unittest.TestCase):
@@ -53,6 +53,26 @@ class MlpModelTest(unittest.TestCase):
 
         self.assertLess(predict_probability(model, [0.1, 0.1, 0.0]), 0.5)
         self.assertGreaterEqual(predict_probability(model, [0.9, 0.8, 0.5]), 0.5)
+
+    def test_pilot_mlp_can_record_validation_selected_threshold(self):
+        model = train_mlp(
+            features=[
+                [0.1, 0.1, 0.0],
+                [0.9, 0.8, 0.5],
+            ],
+            labels=[0, 1],
+            feature_names=["a", "b", "c"],
+            seed=7,
+            hidden_units=2,
+            epochs=20,
+            learning_rate=0.02,
+            model_version="pilot-test",
+        )
+        tuned = with_threshold(model, 0.42, model_version="pilot-test-tuned")
+
+        self.assertEqual(tuned.threshold, 0.42)
+        self.assertEqual(tuned.model_version, "pilot-test-tuned")
+        self.assertEqual(tuned.hidden_weights, model.hidden_weights)
 
 
 if __name__ == "__main__":

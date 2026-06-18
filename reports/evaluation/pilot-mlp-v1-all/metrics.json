@@ -1,0 +1,20 @@
+{
+  "run_id": "pilot-mlp-v1-all",
+  "model_version": "AgileEye-Pilot-MLP-v1",
+  "model_artifact": "artifacts/models/agileeye-pilot-mlp-v1.json",
+  "features": "data/processed/manifests/pilot-100.features.csv",
+  "threshold": 0.5,
+  "split": "all",
+  "video_count": 100,
+  "test_video_count": 0,
+  "average_inference_time_ms": 0.014514210004108463,
+  "hardware": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "accuracy": 0.91,
+  "precision": 0.9019607843137255,
+  "recall": 0.92,
+  "f1_score": 0.9108910891089109,
+  "true_positive": 46,
+  "true_negative": 45,
+  "false_positive": 5,
+  "false_negative": 4
+}

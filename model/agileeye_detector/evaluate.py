@@ -34,6 +34,16 @@ def classification_metrics(rows: list[dict[str, object]]) -> dict[str, float | i
     }
 
 
+def row_matches_split(row_split: str, requested_split: str) -> bool:
+    if requested_split == "all":
+        return True
+    if requested_split == "development":
+        return row_split in {"train", "validation"}
+    if requested_split == "testing":
+        return row_split == "test"
+    return row_split == requested_split
+
+
 def evaluate(features_path: str | Path, model_path: str | Path, out_dir: str | Path, split: str = "test") -> None:
     model = load_model(model_path)
     report_dir = Path(out_dir)
@@ -42,7 +52,7 @@ def evaluate(features_path: str | Path, model_path: str | Path, out_dir: str | P
 
     with Path(features_path).open(newline="", encoding="utf-8") as file:
         for row in csv.DictReader(file):
-            if row["split"] != split:
+            if not row_matches_split(row["split"], split):
                 continue
             values = [float(row[name]) for name in FEATURE_NAMES]
             start = time.perf_counter()
@@ -52,6 +62,7 @@ def evaluate(features_path: str | Path, model_path: str | Path, out_dir: str | P
             prediction_rows.append(
                 {
                     "video_id": row["video_id"],
+                    "split": row["split"],
                     "true_label": row["binary_label"],
                     "predicted_label": predicted_label,
                     "ai_likelihood": probability,
@@ -67,7 +78,9 @@ def evaluate(features_path: str | Path, model_path: str | Path, out_dir: str | P
         "model_artifact": str(model_path),
         "features": str(features_path),
         "threshold": model.threshold,
-        "test_video_count": len(prediction_rows),
+        "split": split,
+        "video_count": len(prediction_rows),
+        "test_video_count": len(prediction_rows) if split in {"test", "testing"} else 0,
         "average_inference_time_ms": (
             sum(float(row["inference_time_ms"]) for row in prediction_rows) / len(prediction_rows)
             if prediction_rows
@@ -89,11 +102,13 @@ def evaluate(features_path: str | Path, model_path: str | Path, out_dir: str | P
                 "# AgileEye Pilot MLP Evaluation",
                 "",
                 f"- Model: `{model.model_version}`",
-                f"- Test videos: {len(prediction_rows)}",
+                f"- Split: {split}",
+                f"- Videos: {len(prediction_rows)}",
                 f"- Accuracy: {metrics_payload['accuracy']:.3f}",
                 f"- Precision: {metrics_payload['precision']:.3f}",
                 f"- Recall: {metrics_payload['recall']:.3f}",
                 f"- F1-score: {metrics_payload['f1_score']:.3f}",
+                f"- Average inference time: {metrics_payload['average_inference_time_ms'] / 1000:.6f} seconds",
                 f"- Threshold: {model.threshold}",
                 "",
                 "These results come from the 100-video AgileEye pilot study and are not forensic proof.",

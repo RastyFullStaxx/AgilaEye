@@ -71,6 +71,7 @@ def train_mlp(
     epochs: int = 450,
     learning_rate: float = 0.035,
     threshold: float = 0.5,
+    model_version: str = "AgileEye-Pilot-MLP-v1",
 ) -> PilotModel:
     randomizer = random.Random(seed)
     scaler = fit_scaler(features)
@@ -116,7 +117,20 @@ def train_mlp(
         output_weights=output_weights,
         output_bias=output_bias,
         threshold=threshold,
-        model_version="AgileEye-Pilot-MLP-v1",
+        model_version=model_version,
+    )
+
+
+def with_threshold(model: PilotModel, threshold: float, model_version: str | None = None) -> PilotModel:
+    return PilotModel(
+        feature_names=model.feature_names,
+        scaler=model.scaler,
+        hidden_weights=model.hidden_weights,
+        hidden_bias=model.hidden_bias,
+        output_weights=model.output_weights,
+        output_bias=model.output_bias,
+        threshold=threshold,
+        model_version=model_version or model.model_version,
     )
 
 

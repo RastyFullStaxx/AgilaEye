@@ -6,17 +6,16 @@ dist-ssr
 src-tauri/target
 src-tauri/gen
 *.log
+*.tsbuildinfo
 __pycache__/
 *.py[cod]
 .pytest_cache/
 
 # Local research data and generated artifacts
-data/raw/
-data/processed/
 artifacts/models/
-artifacts/explanations/
-reports/evaluation/
+public/videos/
 
 # Agent configuration (local only)
 AGENTS.md
 .opencode/agents/*.md
+data

@@ -22,9 +22,18 @@
     "data:validate": "PYTHONPATH=model python3 -m agileeye_detector.validate_manifest --manifest data/processed/manifests/pilot-100.csv --expect-pilot-100",
     "ml:preprocess": "FFMPEG_PATH=\"$(node -e 'console.log(require(\"@ffmpeg-installer/ffmpeg\").path)')\" PYTHONPATH=model python3 -m agileeye_detector.preprocess --manifest data/processed/manifests/pilot-100.csv --out data/processed/manifests/pilot-100.features.csv",
     "ml:train": "PYTHONPATH=model python3 -m agileeye_detector.train --features data/processed/manifests/pilot-100.features.csv --out artifacts/models/agileeye-pilot-mlp-v1.json --seed 42 --epochs 600",
+    "ml:tune": "PYTHONPATH=model python3 -m agileeye_detector.tune --features data/processed/manifests/pilot-100.features.csv --out artifacts/models/agileeye-pilot-mlp-v2.json --report reports/evaluation/pilot-mlp-v2-tuning.json",
     "ml:evaluate": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v1.json --out-dir reports/evaluation/pilot-mlp-v1 --split test",
+    "ml:evaluate:development": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v1.json --out-dir reports/evaluation/pilot-mlp-v1-development --split development",
+    "ml:evaluate:testing": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v1.json --out-dir reports/evaluation/pilot-mlp-v1-testing --split testing",
+    "ml:evaluate:all": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v1.json --out-dir reports/evaluation/pilot-mlp-v1-all --split all",
+    "ml:evaluate:v2:development": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v2.json --out-dir reports/evaluation/pilot-mlp-v2-development --split development",
+    "ml:evaluate:v2:testing": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v2.json --out-dir reports/evaluation/pilot-mlp-v2-testing --split testing",
+    "ml:evaluate:v2:all": "PYTHONPATH=model python3 -m agileeye_detector.evaluate --features data/processed/manifests/pilot-100.features.csv --model artifacts/models/agileeye-pilot-mlp-v2.json --out-dir reports/evaluation/pilot-mlp-v2-all --split all",
     "ml:infer:sample": "FFMPEG_PATH=\"$(node -e 'console.log(require(\"@ffmpeg-installer/ffmpeg\").path)')\" PYTHONPATH=model python3 -m agileeye_detector.infer --model artifacts/models/agileeye-pilot-mlp-v1.json --video data/raw/pilot-100/test/ai_generated/agileeye_0091.mp4",
     "ml:pipeline": "npm run data:validate && npm run ml:preprocess && npm run ml:train && npm run ml:evaluate",
+    "app:generate-videos": "node ./scripts/generate-pilot-video-dataset.mjs",
+    "app:prepare-videos": "node ./scripts/prepare-app-videos.mjs",
     "tauri": "tauri"
   },
   "dependencies": {
