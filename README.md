@@ -1,13 +1,13 @@
 # AgileEye
 
 AgileEye is the repository, research system, and current Tauri/Svelte prototype
-product name shown in the desktop app.
+product name shown in the desktop app
 
 AgileEye is a polished front-end prototype for a lightweight explainable
 AI-generated video detector during Facebook-style video browsing. The MVP scope
 uses embedded feed videos scanned by a deterministic local MLP model that
 reports SOP-style performance metrics. There is no PyTorch sidecar inference,
-Facebook integration, screen capture, scraping, or dataset download in the MVP.
+Facebook integration, screen capture, scraping, or dataset download in the MVP
 
 ## Current Status
 
